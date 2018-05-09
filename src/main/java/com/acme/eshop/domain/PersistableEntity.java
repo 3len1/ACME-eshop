@@ -2,7 +2,8 @@ package com.acme.eshop.domain;
 
 import java.util.UUID;
 import javax.persistence.*;
-import ch.qos.logback.classic.pattern.DateConverter;
+
+import com.acme.eshop.utils.DateConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,17 +17,19 @@ import org.springframework.data.domain.Persistable;
 @MappedSuperclass
 abstract public class PersistableEntity implements Persistable<UUID> {
 
-
+    @Id
+    @Column(name = "id", nullable = false, length = 16)
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private UUID id;
+
+    @CreatedDate
+    @Convert(converter=DateConverter.class)
     private Long createdDate;
 
     public PersistableEntity() {
     }
 
-    @Id
-    @Column(name = "id", nullable = false, length = 16)
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     public UUID getId() {
         return id;
     }
@@ -36,8 +39,7 @@ abstract public class PersistableEntity implements Persistable<UUID> {
         this.id = id;
     }
 
-    @CreatedDate
-    @Convert(converter=DateConverter.class)
+
     public Long getCreatedDate() {
         return createdDate;
     }

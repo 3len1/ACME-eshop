@@ -1,20 +1,32 @@
 package com.acme.eshop.domain;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
  */
 public class Item extends PersistableEntity {
 
+    @Column(name = "PRICE")
     private BigDecimal price;
-    private Integer ammount;
-    private Product product;
-    private Order order;
 
-    public Item(BigDecimal price, Integer ammount, Product product, Order order) {
+    @Column(name = "AMOUNT")
+    private Integer amount;
+
+
+    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @JoinColumn(name="PRODUCT_ID", referencedColumnName="ID", nullable = false)
+    private Product product;
+
+    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @JoinColumn(name="ORDER_ID",referencedColumnName="ID")
+    private List<Order> order;
+
+    public Item(BigDecimal price, Integer amount, Product product, List<Order> order) {
         this.price = price;
-        this.ammount = ammount;
+        this.amount = amount;
         this.product = product;
         this.order = order;
     }
@@ -30,12 +42,12 @@ public class Item extends PersistableEntity {
         this.price = price;
     }
 
-    public Integer getAmmount() {
-        return ammount;
+    public Integer getAmount() {
+        return amount;
     }
 
-    public void setAmmount(Integer ammount) {
-        this.ammount = ammount;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
 
     public Product getProduct() {
@@ -46,11 +58,11 @@ public class Item extends PersistableEntity {
         this.product = product;
     }
 
-    public Order getOrder() {
+    public List<Order> getOrder() {
         return order;
     }
 
-    public void setOrder(Order order) {
+    public void setOrder(List<Order> order) {
         this.order = order;
     }
 }

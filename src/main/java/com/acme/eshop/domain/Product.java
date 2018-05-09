@@ -1,5 +1,6 @@
 package com.acme.eshop.domain;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -8,20 +9,35 @@ import java.util.List;
  */
 public class Product extends PersistableEntity {
 
+    @Column(name = "ORDER_CODE", unique = true)
     private String productCode;
+
+    @Column(name = "PRICE")
     private BigDecimal price;
+
+    @Column(name = "IMG_URL")
     private String imgUrl;
+
+    @Column(name = "DESCRIPTION")
     private String description;
-    private int stockAmmount;
-    private int sold;
+
+    @Column(name = "STOCK")
+    private Integer stockAmmount;
+
+    @Column(name = "SOLD")
+    private Integer sold;
+
+    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @JoinColumn(name="CATEGORY_ID",referencedColumnName="ID")
     private ProductCategory category;
 
+    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE, orphanRemoval=true)
     private List<Item> items;
 
-    public Product() {
-    }
 
-    public Product(String productCode, BigDecimal price, String imgUrl, String description, int stockAmmount, int sold, ProductCategory category) {
+    public Product(String productCode, BigDecimal price, String imgUrl, String description,
+                   Integer stockAmmount, Integer sold, ProductCategory category, List<Item> items) {
         this.productCode = productCode;
         this.price = price;
         this.imgUrl = imgUrl;
@@ -29,6 +45,10 @@ public class Product extends PersistableEntity {
         this.stockAmmount = stockAmmount;
         this.sold = sold;
         this.category = category;
+        this.items = items;
+    }
+
+    public Product() {
     }
 
     public String getProductCode() {
@@ -63,19 +83,19 @@ public class Product extends PersistableEntity {
         this.description = description;
     }
 
-    public int getStockAmmount() {
+    public Integer getStockAmmount() {
         return stockAmmount;
     }
 
-    public void setStockAmmount(int stockAmmount) {
+    public void setStockAmmount(Integer stockAmmount) {
         this.stockAmmount = stockAmmount;
     }
 
-    public int getSold() {
+    public Integer getSold() {
         return sold;
     }
 
-    public void setSold(int sold) {
+    public void setSold(Integer sold) {
         this.sold = sold;
     }
 
@@ -93,5 +113,21 @@ public class Product extends PersistableEntity {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        Product product = (Product) o;
+
+        if (getProductCode() != null ? !getProductCode().equals(product.getProductCode()) :product.getProductCode() != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getProductCode() != null ? getProductCode().hashCode() : 0;
     }
 }

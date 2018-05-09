@@ -1,7 +1,9 @@
 package com.acme.eshop.domain;
 
+import com.acme.eshop.utils.DateConverter;
 import com.acme.eshop.enums.PaymentType;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,23 +12,41 @@ import java.util.List;
  */
 public class Order extends PersistableEntity {
 
+    @Column(name = "ORDER_CODE", unique = true)
     private String orderCode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PAYMENT_METH")
     private PaymentType paymentMethod;
+
+    @Column(name = "PAYMENT_DATE", columnDefinition = "TIMESTAMP")
+    @Convert(converter = DateConverter.class)
     private Long paymentDate;
+
+    @Column(name = "TOTAL_PRICE")
     private BigDecimal totalPrice;
+
+    @Column(name = "COMMENTS")
     private String comments;
 
+
+    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @JoinColumn(name="USER_ID",referencedColumnName="ID")
     private User user;
 
+    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
+               cascade = CascadeType.REMOVE, orphanRemoval=true)
     private List<Item> items;
 
-    public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice, String comments, User user) {
+    public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice,
+                 String comments, User user, List<Item> items) {
         this.orderCode = orderCode;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
         this.totalPrice = totalPrice;
         this.comments = comments;
         this.user = user;
+        this.items = items;
     }
 
     public Order() {
@@ -78,5 +98,29 @@ public class Order extends PersistableEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        Order order = (Order) o;
+
+        if (getOrderCode() != null ? !getOrderCode().equals(order.getOrderCode()) : order.getOrderCode() != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getOrderCode() != null ? getOrderCode().hashCode() : 0;
     }
 }

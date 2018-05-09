@@ -1,28 +1,44 @@
 package com.acme.eshop.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 /**
  * Created by Eleni on 5/8/2018.
  */
 @Entity
-@Table()
+@Table(name = "ADDRESS")
 public class Address extends PersistableEntity{
 
-    private Integer postalCode;
+    @Column(name = "POSTAL_CODE")
+    @Size(max = 5)
+    private String postalCode;
+
+    @Column(name="TOWN", length = 20)
     private String town;
+
+    @Column(name="STREET", length = 60)
     private String street;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Address(@Size(max = 5) String postalCode, String town, String street, User user) {
+        this.postalCode = postalCode;
+        this.town = town;
+        this.street = street;
+        this.user = user;
+    }
 
     public Address() {
     }
 
-    public Integer getPostalCode() {
+    public String getPostalCode() {
         return postalCode;
     }
 
-    public void setPostalCode(Integer postalCode) {
+    public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
 

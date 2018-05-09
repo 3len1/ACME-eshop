@@ -5,5 +5,8 @@ package com.acme.eshop.enums;
  */
 public enum PaymentType {
 
-    MASTERCARD, VISA, PAYPAL, CASH;
+    MASTERCARD,
+    VISA,
+    PAYPAL,
+    CASH
 }
