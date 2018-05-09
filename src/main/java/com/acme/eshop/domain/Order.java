@@ -3,6 +3,7 @@ package com.acme.eshop.domain;
 import com.acme.eshop.enums.PaymentType;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
@@ -16,6 +17,8 @@ public class Order extends PersistableEntity {
     private String comments;
 
     private User user;
+
+    private List<Item> items;
 
     public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice, String comments, User user) {
         this.orderCode = orderCode;

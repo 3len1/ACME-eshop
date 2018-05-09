@@ -21,6 +21,7 @@ public class User extends PersistableEntity {
     private boolean isAdmin;
     private List<Order> orders;
 
+
     public User(String email, String password) {
         super();
         this.email = email;

@@ -1,7 +1,5 @@
 package com.acme.eshop.domain;
 
-import com.acme.eshop.enums.Category;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,14 +14,14 @@ public class Product extends PersistableEntity {
     private String description;
     private int stockAmmount;
     private int sold;
-    private Category category;
+    private ProductCategory category;
 
     private List<Item> items;
 
     public Product() {
     }
 
-    public Product(String productCode, BigDecimal price, String imgUrl, String description, int stockAmmount, int sold, Category category) {
+    public Product(String productCode, BigDecimal price, String imgUrl, String description, int stockAmmount, int sold, ProductCategory category) {
         this.productCode = productCode;
         this.price = price;
         this.imgUrl = imgUrl;
@@ -81,11 +79,11 @@ public class Product extends PersistableEntity {
         this.sold = sold;
     }
 
-    public Category getCategory() {
+    public ProductCategory getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(ProductCategory category) {
         this.category = category;
     }
 
