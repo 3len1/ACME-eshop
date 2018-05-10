@@ -1,6 +1,6 @@
 package com.acme.eshop.service;
 
-import org.jvnet.hk2.annotations.Service;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService{
