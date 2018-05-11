@@ -25,7 +25,7 @@ public class Product extends PersistableEntity {
     private String description;
 
     @Column(name = "STOCK")
-    private Integer stockAmmount;
+    private Integer stockAmount;
 
     @Column(name = "SOLD")
     private Integer sold;
@@ -45,7 +45,7 @@ public class Product extends PersistableEntity {
         this.price = price;
         this.imgUrl = imgUrl;
         this.description = description;
-        this.stockAmmount = stockAmmount;
+        this.stockAmount = stockAmmount;
         this.sold = sold;
         this.category = category;
         this.items = items;
@@ -86,12 +86,12 @@ public class Product extends PersistableEntity {
         this.description = description;
     }
 
-    public Integer getStockAmmount() {
-        return stockAmmount;
+    public Integer getStockAmount() {
+        return stockAmount;
     }
 
-    public void setStockAmmount(Integer stockAmmount) {
-        this.stockAmmount = stockAmmount;
+    public void setStockAmount(Integer stockAmount) {
+        this.stockAmount = stockAmount;
     }
 
     public Integer getSold() {
