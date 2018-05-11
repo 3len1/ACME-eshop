@@ -7,6 +7,9 @@ import java.util.List;
 /**
  * Created by Eleni on 5/8/2018.
  */
+@Entity
+@Table(name="ITEMS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Item extends PersistableEntity {
 
     @Column(name = "PRICE")
@@ -22,9 +25,9 @@ public class Item extends PersistableEntity {
 
     @ManyToOne(optional=false, fetch = FetchType.LAZY)
     @JoinColumn(name="ORDER_ID",referencedColumnName="ID")
-    private List<Order> order;
+    private Order order;
 
-    public Item(BigDecimal price, Integer amount, Product product, List<Order> order) {
+    public Item(BigDecimal price, Integer amount, Product product, Order order) {
         this.price = price;
         this.amount = amount;
         this.product = product;
@@ -58,11 +61,11 @@ public class Item extends PersistableEntity {
         this.product = product;
     }
 
-    public List<Order> getOrder() {
+    public Order getOrder() {
         return order;
     }
 
-    public void setOrder(List<Order> order) {
+    public void setOrder(Order order) {
         this.order = order;
     }
 }

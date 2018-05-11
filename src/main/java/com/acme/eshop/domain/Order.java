@@ -10,6 +10,9 @@ import java.util.List;
 /**
  * Created by Eleni on 5/8/2018.
  */
+@Entity
+@Table(name="ORDERS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Order extends PersistableEntity {
 
     @Column(name = "ORDER_CODE", unique = true)

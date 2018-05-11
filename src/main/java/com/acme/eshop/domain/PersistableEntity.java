@@ -18,7 +18,7 @@ import org.springframework.data.domain.Persistable;
 abstract public class PersistableEntity implements Persistable<UUID> {
 
     @Id
-    @Column(name = "id", nullable = false, length = 16)
+    @Column(name = "ID", nullable = false, length = 16)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private UUID id;

@@ -14,6 +14,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "USERS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class User extends PersistableEntity {
 
 
@@ -48,16 +49,16 @@ public class User extends PersistableEntity {
     private boolean isAdmin;
 
 
-    @OneToOne(mappedBy = "ID", targetEntity = Address.class, fetch = FetchType.LAZY,
+    @OneToOne(mappedBy = "ID", fetch = FetchType.LAZY,
               cascade = CascadeType.ALL, orphanRemoval = true)
-    private UUID addressId;
+    private Address address;
 
 
     @OneToMany(mappedBy = "ID", targetEntity = Order.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval=true)
     private List<Order> orders;
 
     public User(String email, String password, UUID token, String lastName, String firstName, Gender gender,
-                @Size(max = 10) String phone, Long birthday, boolean isAdmin, UUID addressId, List<Order> orders) {
+                @Size(max = 10) String phone, Long birthday, boolean isAdmin, Address address, List<Order> orders) {
         this.email = email;
         this.password = password;
         this.token = token;
@@ -67,7 +68,7 @@ public class User extends PersistableEntity {
         this.phone = phone;
         this.birthday = birthday;
         this.isAdmin = isAdmin;
-        this.addressId = addressId;
+        this.address = address;
         this.orders = orders;
     }
 
@@ -146,13 +147,11 @@ public class User extends PersistableEntity {
         isAdmin = admin;
     }
 
-    public UUID getAddressId() {
-        return addressId;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setAddressId(UUID addressId) {
-        this.addressId = addressId;
-    }
+    public void setAddress(Address address) {this.address = address;}
 
     public List<Order> getOrders() {
         return orders;

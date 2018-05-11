@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "ADDRESS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Address extends PersistableEntity{
 
     @Column(name = "POSTAL_CODE")
@@ -20,8 +21,8 @@ public class Address extends PersistableEntity{
     @Column(name="STREET", length = 60)
     private String street;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(mappedBy = "ID" ,fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     public Address(@Size(max = 5) String postalCode, String town, String street, User user) {

@@ -1,20 +1,20 @@
 package com.acme.eshop.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
  */
+@Entity
+@Table(name="PRODUCT_CATEGORYS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ProductCategory extends PersistableEntity{
 
     @Column(name = "CATEGORY_NAME", unique = true, nullable = false)
     String name;
 
-    @OneToMany(mappedBy = "id", targetEntity = Product.class, fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "ID", targetEntity = Product.class, fetch = FetchType.LAZY,
                cascade = CascadeType.REMOVE, orphanRemoval=true)
     List<Product> product;
 
