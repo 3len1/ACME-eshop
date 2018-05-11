@@ -21,7 +21,7 @@ public class Address extends PersistableEntity{
     @Column(name="STREET", length = 60)
     private String street;
 
-    @OneToOne(mappedBy = "ID" ,fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 

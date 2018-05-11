@@ -14,7 +14,7 @@ public class ProductCategory extends PersistableEntity{
     @Column(name = "CATEGORY_NAME", unique = true, nullable = false)
     String name;
 
-    @OneToMany(mappedBy = "ID", targetEntity = Product.class, fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "category", targetEntity = Product.class, fetch = FetchType.LAZY,
                cascade = CascadeType.REMOVE, orphanRemoval=true)
     List<Product> product;
 

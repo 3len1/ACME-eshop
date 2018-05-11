@@ -34,7 +34,7 @@ public class Product extends PersistableEntity {
     @JoinColumn(name="CATEGORY_ID",referencedColumnName="ID")
     private ProductCategory category;
 
-    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "product", targetEntity = Item.class, fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE, orphanRemoval=true)
     private List<Item> items;
 
