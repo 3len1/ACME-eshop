@@ -1,5 +1,6 @@
 package com.acme.eshop.repository;
 
+import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.Product;
@@ -19,4 +20,5 @@ public interface ItemRepository extends JpaRepository<Item, Long>{
     void deleteAllByOrder(Order order);
 
     List<Item> findByOrOrder(Order order);
+    List<Item> findByCart(Cart cart);
 }

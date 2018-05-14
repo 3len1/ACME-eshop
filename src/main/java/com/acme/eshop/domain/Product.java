@@ -12,7 +12,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Product extends PersistableEntity {
 
-    @Column(name = "ORDER_CODE", unique = true)
+    @Column(name = "PRODUCT_CODE", unique = true)
     private String productCode;
 
     @Column(name = "PRICE")

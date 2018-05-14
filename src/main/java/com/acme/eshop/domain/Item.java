@@ -21,15 +21,20 @@ public class Item extends PersistableEntity {
     @JoinColumn(name="PRODUCT_ID", referencedColumnName="ID", nullable = false)
     private Product product;
 
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @ManyToOne(optional=true, fetch = FetchType.LAZY)
     @JoinColumn(name="ORDER_ID",referencedColumnName="ID")
     private Order order;
 
-    public Item(BigDecimal price, Integer amount, Product product, Order order) {
+    @ManyToOne(optional=true, fetch = FetchType.LAZY)
+    @JoinColumn(name="CART_ID",referencedColumnName="ID")
+    private Cart cart;
+
+    public Item(BigDecimal price, Integer amount, Product product, Order order, Cart cart) {
         this.price = price;
         this.amount = amount;
         this.product = product;
         this.order = order;
+        this.cart = cart;
     }
 
     public Item() {
@@ -65,5 +70,13 @@ public class Item extends PersistableEntity {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 }

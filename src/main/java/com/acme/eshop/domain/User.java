@@ -53,12 +53,17 @@ public class User extends PersistableEntity {
               cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 
+    @OneToOne(mappedBy = "user", targetEntity = Cart.class , fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
+
 
     @OneToMany(mappedBy = "user", targetEntity = Order.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval=true)
     private List<Order> orders;
 
-    public User(String email, String password, UUID token, String lastName, String firstName, Gender gender,
-                @Size(max = 10) String phone, Long birthday, boolean isAdmin, Address address, List<Order> orders) {
+    public User(String email, String password, UUID token, String lastName, String firstName,
+                Gender gender, @Size(max = 10) String phone, Long birthday,
+                boolean isAdmin, Address address, Cart cart, List<Order> orders) {
         this.email = email;
         this.password = password;
         this.token = token;
@@ -69,6 +74,7 @@ public class User extends PersistableEntity {
         this.birthday = birthday;
         this.isAdmin = isAdmin;
         this.address = address;
+        this.cart = cart;
         this.orders = orders;
     }
 
@@ -161,4 +167,11 @@ public class User extends PersistableEntity {
         this.orders = orders;
     }
 
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 }
