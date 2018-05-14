@@ -27,8 +27,8 @@ public class Product extends PersistableEntity {
     @Column(name = "STOCK")
     private Integer stockAmount;
 
-    @Column(name = "SOLD")
-    private Integer sold;
+    @Column(name = "PURCHASED")
+    private Integer purchased;
 
     @ManyToOne(optional=false, fetch = FetchType.LAZY)
     @JoinColumn(name="CATEGORY_ID",referencedColumnName="ID")
@@ -40,13 +40,13 @@ public class Product extends PersistableEntity {
 
 
     public Product(String productCode, BigDecimal price, String imgUrl, String description,
-                   Integer stockAmmount, Integer sold, ProductCategory category, List<Item> items) {
+                   Integer stockAmmount, Integer purchased, ProductCategory category, List<Item> items) {
         this.productCode = productCode;
         this.price = price;
         this.imgUrl = imgUrl;
         this.description = description;
         this.stockAmount = stockAmmount;
-        this.sold = sold;
+        this.purchased = purchased;
         this.category = category;
         this.items = items;
     }
@@ -94,12 +94,12 @@ public class Product extends PersistableEntity {
         this.stockAmount = stockAmount;
     }
 
-    public Integer getSold() {
-        return sold;
+    public Integer getPurchased() {
+        return purchased;
     }
 
-    public void setSold(Integer sold) {
-        this.sold = sold;
+    public void setPurchased(Integer purchased) {
+        this.purchased = purchased;
     }
 
     public ProductCategory getCategory() {
