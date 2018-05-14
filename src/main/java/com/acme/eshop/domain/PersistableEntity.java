@@ -15,13 +15,12 @@ import org.springframework.data.domain.Persistable;
  * Created by Eleni on 5/7/2018.
  */
 @MappedSuperclass
-abstract public class PersistableEntity implements Persistable<UUID> {
+abstract public class PersistableEntity implements Persistable<Long> {
 
     @Id
-    @Column(name = "ID", nullable = false, length = 16)
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
-    private UUID id;
+    @Column(name = "ID", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @CreatedDate
     @Convert(converter=DateConverter.class)
@@ -30,12 +29,12 @@ abstract public class PersistableEntity implements Persistable<UUID> {
     public PersistableEntity() {
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -49,7 +49,7 @@ public class User extends PersistableEntity {
     private boolean isAdmin;
 
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY,
+    @OneToOne(mappedBy = "user", targetEntity = Address.class , fetch = FetchType.LAZY,
               cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 

@@ -2,7 +2,6 @@ package com.acme.eshop.domain;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
@@ -17,7 +16,6 @@ public class Item extends PersistableEntity {
 
     @Column(name = "AMOUNT")
     private Integer amount;
-
 
     @ManyToOne(optional=false, fetch = FetchType.LAZY)
     @JoinColumn(name="PRODUCT_ID", referencedColumnName="ID", nullable = false)
