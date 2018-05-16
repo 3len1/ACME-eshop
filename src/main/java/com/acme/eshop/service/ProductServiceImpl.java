@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Component("productService")
 @Transactional
 public class ProductServiceImpl implements ProductService {
+
     private final String OUT_OF_STOCK="0";
     @Autowired
     private ProductRepository productRepository;
@@ -62,22 +62,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductByCategory(String categoryName) {
-        ProductCategory category = productCategoryRepository.findByName(categoryName);
-        if (category != null)
-            productRepository.deleteByCategory(category);
-
-    }
-
-    @Override
-    public List<Product> mostPurchased() {
-        return productRepository.findTop10ByOrderByPurchasedDesc();
+    public Page<Product> getAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Override
     public Page<Product> mostPurchasedByCategory(String categoryName, Pageable pageable) {
         ProductCategory category = productCategoryRepository.findByName(categoryName);
         return category!=null? productRepository.findByCategoryOrderByPurchasedDesc(category, pageable):null;
+    }
+    @Override
+    public Page<Product> productByCategory(String categoryName, Pageable pageable) {
+        ProductCategory category = productCategoryRepository.findByName(categoryName);
+        return category!=null? productRepository.findByCategory(category, pageable):null;
+    }
+
+    @Override
+    public Page<Product> search(String categoryName, BigDecimal priceMin, BigDecimal priceMax, Integer purchasedMin, Integer purchasedMax, Pageable pageable) {
+        ProductCategory category = productCategoryRepository.findByName(categoryName);
+        return category!=null? productRepository.findWithCriteria(category, priceMin, priceMax, purchasedMin, purchasedMax, pageable): null;
     }
 
     @Override
@@ -86,14 +89,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> productByCategory(String categoryName, Pageable pageable) {
-        ProductCategory category = productCategoryRepository.findByName(categoryName);
-        return category!=null? productRepository.findByCategoryOrderByPurchasedDesc(category, pageable):null;
-    }
-
-    @Override
-    public Page<Product> search(String categoryName, BigDecimal priceMin, BigDecimal priceMax, Integer purchasedMin, Integer purchasedMax, Pageable pageable) {
-        ProductCategory category = productCategoryRepository.findByName(categoryName);
-        return category!=null? productRepository.findWithCriteria(category, priceMin, priceMax, purchasedMin, purchasedMax, pageable): null;
+    public List<Product> mostPurchased() {
+        return productRepository.findTop10ByOrderByPurchasedDesc();
     }
 }
