@@ -17,4 +17,5 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
     void delete(ProductCategory category);
     
     Page<ProductCategory> findAll(Pageable pageable);
+    ProductCategory findByName(String name);
 }
