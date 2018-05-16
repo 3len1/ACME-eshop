@@ -1,9 +1,11 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.ProductCategory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface ProductCategoryService {
 
     ProductCategory getProductCategory(String categoryName);

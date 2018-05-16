@@ -1,11 +1,9 @@
 package com.acme.eshop.domain;
 
-import java.util.UUID;
-import javax.persistence.*;
 
+import javax.persistence.*;
 import com.acme.eshop.utils.DateConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 

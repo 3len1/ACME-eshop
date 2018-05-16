@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Component("productService")
@@ -36,8 +36,10 @@ public class ProductServiceImpl implements ProductService {
     public Product createProduct(ProductDto product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null;
-        if (category != null)
+        if (category != null) {
             retrieveProduct = productConverter.getProductFromJson(product, category);
+            retrieveProduct.setCreatedDate(Instant.now().toEpochMilli());
+        }
         return retrieveProduct!=null?productRepository.save(retrieveProduct): null;
     }
 
