@@ -2,6 +2,7 @@ package com.acme.eshop.service;
 
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.Item;
+import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.dto.ItemDto;
 import com.acme.eshop.repository.CartRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -56,7 +58,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart deleteItemFromCart(String productCode, Long userId) {
+    public Cart removeItemFromCart(String productCode, Long userId) {
         Cart cart = getCartByUser(userId);
         Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product ->{
             if (cart!=null)
@@ -74,5 +76,11 @@ public class CartServiceImpl implements CartService {
                 cart.setItems(null);
                 cartRepository.save(cart);
             });
+    }
+
+    @Override
+    public List<Item> getAllItemsFromCart(Long userId) {
+        Cart cart = getCartByUser(userId);
+        return (cart !=null)? itemRepository.findByCart(cart):null;
     }
 }

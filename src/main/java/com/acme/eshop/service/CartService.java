@@ -1,8 +1,11 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.Cart;
+import com.acme.eshop.domain.Item;
 import com.acme.eshop.dto.ItemDto;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by Eleni on 17/5/2018.
@@ -11,7 +14,13 @@ import org.springframework.stereotype.Service;
 public interface CartService {
 
     Cart getCartByUser(Long userId);
+
     Cart addItemToCart(ItemDto addedItem, Long userId);
-    Cart deleteItemFromCart(String productCode, Long userId);
+
+    Cart removeItemFromCart(String productCode, Long userId);
+
     void emptyCart(Long userId);
+
+    List<Item> getAllItemsFromCart(Long userId);
+
 }

@@ -20,6 +20,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     void delete(Order order);
     void deleteAllByUser(User user);
 
+    Order findOneByOrderCode(String orderCode);
     Page<Order> findByUser(User user, Pageable pageable);
     Page<Order> findAll(Pageable pageable);
 

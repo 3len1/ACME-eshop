@@ -32,7 +32,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address updateUserAddress(Long userId, AddressDto addressDto) {
         User user = userRepository.findById(userId).orElseGet(null);
-        Address address = addressConverter.getAddressFromJson(addressDto);
+        Address address = addressConverter.getAddress(addressDto);
         address.setId(user.getAddress().getId());
         return (user!=null && address!=null)? addressRepository.save(address): null;
     }

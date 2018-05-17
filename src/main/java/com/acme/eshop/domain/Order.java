@@ -32,6 +32,9 @@ public class Order extends PersistableEntity {
     @Column(name = "COMMENTS")
     private String comments;
 
+    @Column(name = "CANCELED")
+    private boolean canceled;
+
 
     @ManyToOne(optional=false, fetch = FetchType.LAZY)
     @JoinColumn(name="USER_ID",referencedColumnName="ID")
@@ -42,12 +45,13 @@ public class Order extends PersistableEntity {
     private List<Item> items;
 
     public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice,
-                 String comments, User user, List<Item> items) {
+                 String comments,boolean canceled, User user, List<Item> items) {
         this.orderCode = orderCode;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
         this.totalPrice = totalPrice;
         this.comments = comments;
+        this.canceled =canceled;
         this.user = user;
         this.items = items;
     }
@@ -94,6 +98,10 @@ public class Order extends PersistableEntity {
     public void setComments(String comments) {
         this.comments = comments;
     }
+
+    public boolean isCanceled() { return canceled; }
+
+    public void setCanceled(boolean canceled) { this.canceled = canceled;}
 
     public User getUser() {
         return user;

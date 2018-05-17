@@ -174,4 +174,20 @@ public class User extends PersistableEntity {
     public void setCart(Cart cart) {
         this.cart = cart;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        User user = (User) o;
+
+        if (getEmail() != null ? !getEmail().equals(user.getEmail()) : user.getEmail() != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getEmail() != null ? getEmail().hashCode() : 0;
+    }
 }

@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null;
         if (category != null) {
-            retrieveProduct = productConverter.getProductFromJson(product, category);
+            retrieveProduct = productConverter.getProduct(product, category);
             retrieveProduct.setCreatedDate(DateUtils.epochNow());
         }
         return retrieveProduct!=null?productRepository.save(retrieveProduct): null;
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null;
         if (category != null)
-            retrieveProduct = productConverter.getProductFromJson(product, category);
+            retrieveProduct = productConverter.getProduct(product, category);
         if (retrieveProduct!=null) retrieveProduct = productRepository.findByProductCode(product.getProductCode());
         return (retrieveProduct!=null)?productRepository.save(retrieveProduct): null;
     }
@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null;
         if (category != null)
-            retrieveProduct = productConverter.getProductFromJson(product, category);
+            retrieveProduct = productConverter.getProduct(product, category);
         if (retrieveProduct!=null) retrieveProduct = productRepository.findByProductCode(product.getProductCode());
         if (retrieveProduct!=null) productRepository.delete(retrieveProduct);
     }

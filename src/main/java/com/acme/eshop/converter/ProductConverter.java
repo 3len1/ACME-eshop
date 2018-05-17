@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Component
 public class ProductConverter {
 
-    public Product getProductFromJson(ProductDto productDto, ProductCategory category){
+    public Product getProduct(ProductDto productDto, ProductCategory category){
         return Try.of(() -> {
             Product product = new Product();
             product.setProductCode(productDto.getProductCode());

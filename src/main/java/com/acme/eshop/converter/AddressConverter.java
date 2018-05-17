@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddressConverter {
 
-    public Address getAddressFromJson(AddressDto addressDto){
+    public Address getAddress(AddressDto addressDto){
         return Try.of(() -> {
             Address address = new Address();
             address.setPostalCode(addressDto.getPostalCode());
