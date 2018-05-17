@@ -1,6 +1,9 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,13 +11,20 @@ import java.util.List;
 @Service
 public interface UserService {
 
-    public List<User> getAll();
-    public User getUser(int id);
-    public User updateUser(int id);
-    public void deleteUser(int id);
-    public User createUser();
+    User showUser(Long userId);
 
-    public User userLogin();
-    public void userLogout(User user);
+    User createAccount(UserDto user);
+
+    User updateAccount(UserDto user, Long userId);
+
+    User adminCreateUser(UserDto user, boolean isAdmin);
+
+    User adminUpdateUser(UserDto user, boolean isAdmin);
+
+    void adminDeleteUser(Long userId, boolean isAdmin);
+
+    Page<User> getAll(boolean isAdmin, Pageable pageable);
+
+    List<User> getAllOrderByNumberOFOrders(boolean isAdmin);
 
 }

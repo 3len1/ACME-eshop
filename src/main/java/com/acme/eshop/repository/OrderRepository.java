@@ -14,17 +14,16 @@ import org.springframework.stereotype.Repository;
  * Created by Eleni on 5/13/2018.
  */
 @Repository
-public interface OrderRepository extends JpaRepository<Order,Long> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Order save(Order order);
     void delete(Order order);
     void deleteAllByUser(User user);
-
     Order findOneByOrderCode(String orderCode);
     Page<Order> findByUser(User user, Pageable pageable);
     Page<Order> findAll(Pageable pageable);
 
     @Query("select count(o) from Order o where o.user = ?1")
-    int countByUser(@Param("user") User user);
+    Integer countByUser(@Param("user") User user);
 
 }

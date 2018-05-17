@@ -36,4 +36,11 @@ public class AddressServiceImpl implements AddressService {
         address.setId(user.getAddress().getId());
         return (user != null && address != null) ? addressRepository.save(address) : null;
     }
+
+    @Override
+    public Address createUserAddress(AddressDto addressDto, User user) {
+        Address address = addressConverter.getAddress(addressDto);
+        address.setUser(user);
+        return addressRepository.save(address);
+    }
 }

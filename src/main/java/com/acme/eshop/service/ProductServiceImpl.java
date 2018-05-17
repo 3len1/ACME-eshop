@@ -36,8 +36,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product createProduct(ProductDto product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
-        Product retrieveProduct = null;
-        if (category != null) {
+        Product retrieveProduct = null, checkProduct;
+        if (product.getProductCode() != null)
+            checkProduct = productRepository.findByProductCode(product.getProductCode());
+        else return null;
+        if (category != null && checkProduct == null) {
             retrieveProduct = productConverter.getProduct(product, category);
             retrieveProduct.setCreatedDate(DateUtils.epochNow());
         }
@@ -47,10 +50,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product updateProduct(ProductDto product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
-        Product retrieveProduct = null;
-        if (category != null)
+        Product retrieveProduct = null, checkProduct;
+        if (product.getProductCode() != null)
+            checkProduct = productRepository.findByProductCode(product.getProductCode());
+        else return null;
+        if (category != null && checkProduct != null)
             retrieveProduct = productConverter.getProduct(product, category);
-        if (retrieveProduct != null) retrieveProduct = productRepository.findByProductCode(product.getProductCode());
         return (retrieveProduct != null) ? productRepository.save(retrieveProduct) : null;
     }
 
