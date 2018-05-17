@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * Created by Eleni on 5/8/2018.
  */
 @Entity
-@Table(name="ITEMS")
+@Table(name = "ITEMS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Item extends PersistableEntity {
 
@@ -17,16 +17,16 @@ public class Item extends PersistableEntity {
     @Column(name = "AMOUNT")
     private Integer amount;
 
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
-    @JoinColumn(name="PRODUCT_ID", referencedColumnName="ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "ID", nullable = false)
     private Product product;
 
-    @ManyToOne(optional=true, fetch = FetchType.LAZY)
-    @JoinColumn(name="ORDER_ID",referencedColumnName="ID")
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDER_ID", referencedColumnName = "ID")
     private Order order;
 
-    @ManyToOne(optional=true, fetch = FetchType.LAZY)
-    @JoinColumn(name="CART_ID",referencedColumnName="ID")
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CART_ID", referencedColumnName = "ID")
     private Cart cart;
 
     public Item(BigDecimal price, Integer amount, Product product, Order order, Cart cart) {

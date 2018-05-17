@@ -5,6 +5,7 @@ import com.acme.eshop.domain.ProductCategory;
 import com.acme.eshop.dto.ProductDto;
 import javaslang.control.Try;
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 
 /**
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 @Component
 public class ProductConverter {
 
-    public Product getProduct(ProductDto productDto, ProductCategory category){
+    public Product getProduct(ProductDto productDto, ProductCategory category) {
         return Try.of(() -> {
             Product product = new Product();
             product.setProductCode(productDto.getProductCode());

@@ -16,7 +16,7 @@ public class Cart extends PersistableEntity {
     private User user;
 
     @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE, orphanRemoval=true)
+            cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Item> items;
 
     public Cart(User user, List<Item> items) {

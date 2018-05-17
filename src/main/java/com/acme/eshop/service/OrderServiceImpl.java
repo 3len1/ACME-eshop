@@ -1,7 +1,6 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.converter.OrderConverter;
-import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.User;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Component("orderService")
@@ -43,31 +41,31 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<Order> getAllOrder(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId).get();
-        if (user!= null && user.isAdmin())
+        if (user != null && user.isAdmin())
             return orderRepository.findAll(pageable);
-        else if (user!=null)
+        else if (user != null)
             return orderRepository.findByUser(user, pageable);
         else
-            return  null;
+            return null;
     }
 
     @Override
     public Page<Order> getAllByUser(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId).get();
-        return (user!=null)? orderRepository.findByUser(user, pageable): null;
+        return (user != null) ? orderRepository.findByUser(user, pageable) : null;
 
     }
 
     @Override
     public Order showOrder(String orderCode, Long userId) {
         Order order = orderRepository.findOneByOrderCode(orderCode);
-        return (order != null && order.getUser().getId().equals(userId))? order : null;
+        return (order != null && order.getUser().getId().equals(userId)) ? order : null;
     }
 
     @Override
     public Order payOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        if(order != null){
+        if (order != null) {
             order.setPaymentDate(DateUtils.epochNow());
             orderRepository.save(order);
             return order;
@@ -77,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(OrderDto orderDto, Long userId) {
-        if (orderRepository.findOneByOrderCode(orderDto.getOrderCode())!=null)
+        if (orderRepository.findOneByOrderCode(orderDto.getOrderCode()) != null)
             return null;
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
             List<Item> cartsItems = cart.getItems();
@@ -92,21 +90,21 @@ public class OrderServiceImpl implements OrderService {
             orderRepository.save(order);
         });
         Order o = orderRepository.findOneByOrderCode(orderDto.getOrderCode());
-        return (o!=null)? o: null;
+        return (o != null) ? o : null;
     }
 
     @Override
     public Order addItemsToOrder(String orderCode, ItemDto addedItem, Long userId) {
         Item item = new Item();
-        Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product ->{
+        Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);
-            item.setAmount((addedItem.getAmount()!=null)?Integer.parseInt(addedItem.getAmount()):1);
+            item.setAmount((addedItem.getAmount() != null) ? Integer.parseInt(addedItem.getAmount()) : 1);
             item.setPrice(PriceUtils.bigDecimalMultiply(product.getPrice(), item.getAmount()));
             item.setCreatedDate(DateUtils.epochNow());
             item.setOrder(showOrder(orderCode, userId));
         });
 
-        if(item.getOrder()!=null){
+        if (item.getOrder() != null) {
             itemRepository.save(item);
             return orderRepository.save(item.getOrder());
         }
@@ -116,17 +114,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order removeItemFromOrder(String orderCode, String productCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product ->{
-            if (order!=null)
+        Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product -> {
+            if (order != null)
                 itemRepository.deleteAllByProductAndOrder(product, order);
         });
-        return (order!=null)?order:null;
+        return (order != null) ? order : null;
     }
 
     @Override
     public boolean cancelOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        if(order != null){
+        if (order != null) {
             order.setCanceled(true);
             orderRepository.save(order);
             return true;
@@ -135,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteOrder(String orderCode, Long userId){
+    public void deleteOrder(String orderCode, Long userId) {
         Optional.ofNullable(showOrder(orderCode, userId)).ifPresent(order -> {
             itemRepository.deleteAllByOrder(order);
             orderRepository.delete(order);
@@ -145,6 +143,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Item> getAllItemsFromOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        return (order !=null)? itemRepository.findByOrder(order):null;
+        return (order != null) ? itemRepository.findByOrder(order) : null;
     }
 }

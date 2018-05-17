@@ -16,7 +16,7 @@ public enum PaymentType {
 
         PaymentType paymentType;
         paymentMethod = paymentMethod.toUpperCase();
-        switch (paymentMethod){
+        switch (paymentMethod) {
             case "MASTERCARD":
                 paymentType = MASTERCARD;
                 break;
@@ -29,7 +29,8 @@ public enum PaymentType {
             case "CASH":
                 paymentType = CASH;
                 break;
-            default: throw new RuntimeException("UNKNOWN payment method " + paymentMethod);
+            default:
+                throw new RuntimeException("UNKNOWN payment method " + paymentMethod);
         }
         return paymentType;
     }

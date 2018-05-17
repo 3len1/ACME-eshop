@@ -30,12 +30,12 @@ public class Product extends PersistableEntity {
     @Column(name = "PURCHASED")
     private Integer purchased;
 
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
-    @JoinColumn(name="CATEGORY_ID",referencedColumnName="ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
     private ProductCategory category;
 
     @OneToMany(mappedBy = "product", targetEntity = Item.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE, orphanRemoval=true)
+            cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Item> items;
 
 
@@ -123,7 +123,7 @@ public class Product extends PersistableEntity {
         if (this == o) return true;
         Product product = (Product) o;
 
-        if (getProductCode() != null ? !getProductCode().equals(product.getProductCode()) :product.getProductCode() != null)
+        if (getProductCode() != null ? !getProductCode().equals(product.getProductCode()) : product.getProductCode() != null)
             return false;
 
         return true;

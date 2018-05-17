@@ -9,16 +9,16 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "ADDRESS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Address extends PersistableEntity{
+public class Address extends PersistableEntity {
 
     @Column(name = "POSTAL_CODE")
     @Size(max = 5)
     private String postalCode;
 
-    @Column(name="TOWN", length = 20)
+    @Column(name = "TOWN", length = 20)
     private String town;
 
-    @Column(name="STREET", length = 60)
+    @Column(name = "STREET", length = 60)
     private String street;
 
     @OneToOne(fetch = FetchType.LAZY)

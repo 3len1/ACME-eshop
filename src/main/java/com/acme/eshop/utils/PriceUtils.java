@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  */
 public class PriceUtils {
 
-    public static BigDecimal bigDecimalMultiply(BigDecimal price, Integer quantity){
-        return BigDecimal.valueOf(price.doubleValue()*quantity);
+    public static BigDecimal bigDecimalMultiply(BigDecimal price, Integer quantity) {
+        return BigDecimal.valueOf(price.doubleValue() * quantity);
     }
 }
