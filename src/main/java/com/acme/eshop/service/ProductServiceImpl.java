@@ -6,6 +6,7 @@ import com.acme.eshop.domain.ProductCategory;
 import com.acme.eshop.dto.ProductDto;
 import com.acme.eshop.repository.ProductCategoryRepository;
 import com.acme.eshop.repository.ProductRepository;
+import com.acme.eshop.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
         Product retrieveProduct = null;
         if (category != null) {
             retrieveProduct = productConverter.getProductFromJson(product, category);
-            retrieveProduct.setCreatedDate(Instant.now().toEpochMilli());
+            retrieveProduct.setCreatedDate(DateUtils.epochNow());
         }
         return retrieveProduct!=null?productRepository.save(retrieveProduct): null;
     }

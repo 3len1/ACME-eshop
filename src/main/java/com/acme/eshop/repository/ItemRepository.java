@@ -18,6 +18,8 @@ public interface ItemRepository extends JpaRepository<Item, Long>{
     void delete(Item item);
     void deleteAllByProduct(Product product);
     void deleteAllByOrder(Order order);
+    void deleteAllByCart(Cart cart);
+    void deleteAllByProductAndCart(Product product, Cart cart);
 
     List<Item> findByOrOrder(Order order);
     List<Item> findByCart(Cart cart);

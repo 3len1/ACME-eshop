@@ -31,4 +31,8 @@ public class DateUtils {
 
         return instantToLocalDateTime(Instant.ofEpochMilli(date), zone);
     }
+
+    public static Long epochNow(){
+        return Instant.now().toEpochMilli();
+    }
 }

@@ -24,6 +24,9 @@ public class Cart extends PersistableEntity {
         this.items = items;
     }
 
+    public Cart() {
+    }
+
     public User getUser() {
         return user;
     }

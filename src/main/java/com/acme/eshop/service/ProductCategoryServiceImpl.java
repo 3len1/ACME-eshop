@@ -3,6 +3,7 @@ package com.acme.eshop.service;
 import com.acme.eshop.domain.ProductCategory;
 import com.acme.eshop.repository.ProductCategoryRepository;
 import com.acme.eshop.repository.ProductRepository;
+import com.acme.eshop.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
@@ -28,7 +29,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService{
         if (productCategoryRepository.findByName(categoryName)!= null)
             return null;
         ProductCategory category = new ProductCategory();
-        category.setCreatedDate(Instant.now().toEpochMilli());
+        category.setCreatedDate(DateUtils.epochNow());
         category.setName(categoryName);
         return productCategoryRepository.save(category);
     }
