@@ -4,6 +4,7 @@ import com.acme.eshop.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByToken(UUID token);
+    List<User> findByToken(UUID token);
     User findByEmailAndPassword(String email, String password);
     User findByEmail(String email);
     User save(User user);

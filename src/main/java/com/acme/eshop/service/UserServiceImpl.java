@@ -126,6 +126,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllOrderByNumberOFOrders(boolean isAdmin) {
+        //TODO check if it work i am not sure at all is there any better way
         Map<Integer, User> orderedUsers = new TreeMap<>();
         if (!isAdmin) return null;
         userRepository.findAll().stream().forEach(user -> {
