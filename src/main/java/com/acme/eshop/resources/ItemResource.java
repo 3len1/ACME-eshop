@@ -1,4 +1,4 @@
-package com.acme.eshop.dto;
+package com.acme.eshop.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ItemDto {
+public class ItemResource {
 
     private static final String NUMBER_PATTERN = "^\\d*$";
 

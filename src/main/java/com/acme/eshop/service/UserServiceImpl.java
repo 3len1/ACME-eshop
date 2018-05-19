@@ -3,7 +3,7 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.UserConverter;
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.dto.UserDto;
+import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.repository.AddressRepository;
 import com.acme.eshop.repository.CartRepository;
 import com.acme.eshop.repository.OrderRepository;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createAccount(UserDto user) {
+    public User createAccount(UserResource user) {
         if (userRepository.findByEmail(user.getEmail()) != null)
             return null;
         User retrieveUser;
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateAccount(UserDto user, Long userId) {
+    public User updateAccount(UserResource user, Long userId) {
         if (!userRepository.findById(userId).isPresent())
             return null;
         User retrieveUser;
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User adminCreateUser(UserDto user, boolean isAdmin) {
+    public User adminCreateUser(UserResource user, boolean isAdmin) {
         if (!isAdmin && (userRepository.findByEmail(user.getEmail()) != null))
             return null;
         User retrieveUser;
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User adminUpdateUser(UserDto user, boolean isAdmin) {
+    public User adminUpdateUser(UserResource user, boolean isAdmin) {
         if (isAdmin == false && (userRepository.findByEmail(user.getEmail()) == null))
             return null;
         User retrieveUser;

@@ -1,4 +1,4 @@
-package com.acme.eshop.dto;
+package com.acme.eshop.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Getter
 @Setter
-public class OrderDto {
+public class OrderResource {
 
     @NotNull(message = "{order.code.null}")
     private String orderCode;

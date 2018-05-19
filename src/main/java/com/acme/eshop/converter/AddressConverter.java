@@ -1,9 +1,8 @@
 package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.Address;
-import com.acme.eshop.dto.AddressDto;
+import com.acme.eshop.resources.AddressResource;
 import javaslang.control.Try;
-import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,12 +12,12 @@ import org.springframework.stereotype.Component;
 
 public class AddressConverter {
 
-    public Address getAddress(AddressDto addressDto) {
+    public Address getAddress(AddressResource addressResource) {
         return Try.of(() -> {
             Address address = new Address();
-            address.setPostalCode(addressDto.getPostalCode());
-            address.setTown(addressDto.getTown());
-            address.setStreet(addressDto.getStreet());
+            address.setPostalCode(addressResource.getPostalCode());
+            address.setTown(addressResource.getTown());
+            address.setStreet(addressResource.getStreet());
             return address;
         }).getOrElseGet(null);
     }

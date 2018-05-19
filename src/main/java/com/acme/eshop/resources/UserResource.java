@@ -1,4 +1,4 @@
-package com.acme.eshop.dto;
+package com.acme.eshop.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDto {
+public class UserResource {
 
     private static final String MAIL_PATTERN = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,63}$";
     private static final String PASSWORD_PATTERN = "^[a-zA-Z0-9@#$%^&]*$";
@@ -50,6 +50,6 @@ public class UserDto {
 
     private String type;
 
-    private AddressDto address;
+    private AddressResource address;
 
 }

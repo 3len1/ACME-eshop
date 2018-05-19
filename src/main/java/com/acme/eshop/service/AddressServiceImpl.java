@@ -3,7 +3,7 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.AddressConverter;
 import com.acme.eshop.domain.Address;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.dto.AddressDto;
+import com.acme.eshop.resources.AddressResource;
 import com.acme.eshop.repository.AddressRepository;
 import com.acme.eshop.repository.UserRepository;
 import com.acme.eshop.utils.DateUtils;
@@ -31,16 +31,16 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Address updateUserAddress(Long userId, AddressDto addressDto) {
+    public Address updateUserAddress(Long userId, AddressResource addressResource) {
         User user = userRepository.findById(userId).orElseGet(null);
-        Address address = addressConverter.getAddress(addressDto);
+        Address address = addressConverter.getAddress(addressResource);
         address.setId(user.getAddress().getId());
         return (user != null && address != null) ? addressRepository.save(address) : null;
     }
 
     @Override
-    public Address createUserAddress(AddressDto addressDto, User user) {
-        Address address = addressConverter.getAddress(addressDto);
+    public Address createUserAddress(AddressResource addressResource, User user) {
+        Address address = addressConverter.getAddress(addressResource);
         address.setCreatedDate(DateUtils.epochNow());
         address.setUser(user);
         return addressRepository.save(address);

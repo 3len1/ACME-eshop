@@ -1,4 +1,4 @@
-package com.acme.eshop.dto;
+package com.acme.eshop.resources;
 
 /**
  * Created by Eleni on 15/5/2018.

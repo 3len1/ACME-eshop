@@ -3,7 +3,7 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.ProductConverter;
 import com.acme.eshop.domain.Product;
 import com.acme.eshop.domain.ProductCategory;
-import com.acme.eshop.dto.ProductDto;
+import com.acme.eshop.resources.ProductResource;
 import com.acme.eshop.repository.ProductCategoryRepository;
 import com.acme.eshop.repository.ProductRepository;
 import com.acme.eshop.utils.DateUtils;
@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(ProductDto product) {
+    public Product createProduct(ProductResource product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null, checkProduct;
         if (product.getProductCode() != null)
@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(ProductDto product) {
+    public Product updateProduct(ProductResource product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null, checkProduct;
         if (product.getProductCode() != null)
@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(ProductDto product) {
+    public void deleteProduct(ProductResource product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null;
         if (category != null)

@@ -1,7 +1,7 @@
 package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.Order;
-import com.acme.eshop.dto.OrderDto;
+import com.acme.eshop.resources.OrderResource;
 import com.acme.eshop.enums.PaymentType;
 import javaslang.control.Try;
 import org.springframework.stereotype.Component;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderConverter {
 
-    public Order getOrder(OrderDto orderDto) {
+    public Order getOrder(OrderResource orderResource) {
         return Try.of(() -> {
             Order order = new Order();
-            order.setOrderCode(orderDto.getOrderCode());
-            order.setComments(orderDto.getComments());
-            order.setPaymentMethod(PaymentType.fromString(orderDto.getPaymentMethod()));
+            order.setOrderCode(orderResource.getOrderCode());
+            order.setComments(orderResource.getComments());
+            order.setPaymentMethod(PaymentType.fromString(orderResource.getPaymentMethod()));
             return order;
         }).getOrElseGet(null);
     }

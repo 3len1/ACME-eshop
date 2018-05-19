@@ -1,4 +1,4 @@
-package com.acme.eshop.dto;
+package com.acme.eshop.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AddressDto {
+public class AddressResource {
 
     private static final String POSTAL_CODE_PATTERN = "\\d\\d\\d\\d\\d";
     private static final String TOWN_PATTERN = "^[A-z]+$";

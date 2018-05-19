@@ -1,7 +1,7 @@
 package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.User;
-import com.acme.eshop.dto.UserDto;
+import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.enums.Gender;
 import javaslang.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +19,20 @@ public class UserConverter {
     @Autowired
     private AddressConverter addressConverter;
 
-    public User getUser(UserDto userDto) {
+    public User getUser(UserResource userResource) {
         return Try.of(() -> {
             User user = new User();
-            user.setEmail(userDto.getEmail());
-            user.setPassword(userDto.getPassword());
-            user.setLastName(userDto.getLastName());
-            user.setFirstName(userDto.getFirstName());
-            user.setGender(Gender.fromString(userDto.getGender()));
-            user.setPhone(userDto.getPhone());
-            if (userDto.getType().equalsIgnoreCase(ADMIN))
+            user.setEmail(userResource.getEmail());
+            user.setPassword(userResource.getPassword());
+            user.setLastName(userResource.getLastName());
+            user.setFirstName(userResource.getFirstName());
+            user.setGender(Gender.fromString(userResource.getGender()));
+            user.setPhone(userResource.getPhone());
+            if (userResource.getType().equalsIgnoreCase(ADMIN))
                 user.setAdmin(true);
             else user.setAdmin(false);
-            user.setAddress(addressConverter.getAddress(userDto.getAddress()));
-            user.setBirthday(userDto.getBirthday().toEpochMilli());
+            user.setAddress(addressConverter.getAddress(userResource.getAddress()));
+            user.setBirthday(userResource.getBirthday().toEpochMilli());
             return user;
         }).getOrElseGet(null);
     }

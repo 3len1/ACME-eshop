@@ -3,7 +3,7 @@ package com.acme.eshop.service;
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.dto.ItemDto;
+import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.repository.CartRepository;
 import com.acme.eshop.repository.ItemRepository;
 import com.acme.eshop.repository.ProductRepository;
@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart addItemToCart(ItemDto addedItem, Long userId) {
+    public Cart addItemToCart(ItemResource addedItem, Long userId) {
         Item item = new Item();
         Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);

@@ -2,7 +2,7 @@ package com.acme.eshop.service;
 
 import com.acme.eshop.domain.Product;
 
-import com.acme.eshop.dto.ProductDto;
+import com.acme.eshop.resources.ProductResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ import java.util.List;
 public interface ProductService {
 
    Product showProduct(String productCode);
-   Product createProduct(ProductDto product);
-   Product updateProduct(ProductDto product);
-   void deleteProduct(ProductDto product);
+   Product createProduct(ProductResource product);
+   Product updateProduct(ProductResource product);
+   void deleteProduct(ProductResource product);
    Page<Product> getAll(Pageable pageable);
    Page<Product> mostPurchasedByCategory(String categoryName, Pageable pageable);
    Page<Product> productByCategory(String categoryName, Pageable pageable);

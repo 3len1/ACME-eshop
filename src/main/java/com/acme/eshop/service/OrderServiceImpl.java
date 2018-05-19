@@ -4,8 +4,8 @@ import com.acme.eshop.converter.OrderConverter;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.dto.ItemDto;
-import com.acme.eshop.dto.OrderDto;
+import com.acme.eshop.resources.ItemResource;
+import com.acme.eshop.resources.OrderResource;
 import com.acme.eshop.repository.*;
 import com.acme.eshop.utils.DateUtils;
 import com.acme.eshop.utils.PriceUtils;
@@ -74,12 +74,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createOrder(OrderDto orderDto, Long userId) {
-        if (orderRepository.findOneByOrderCode(orderDto.getOrderCode()) != null)
+    public Order createOrder(OrderResource orderResource, Long userId) {
+        if (orderRepository.findOneByOrderCode(orderResource.getOrderCode()) != null)
             return null;
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
                 List<Item> cartsItems = cart.getItems();
-                Order order = orderConverter.getOrder(orderDto);
+                Order order = orderConverter.getOrder(orderResource);
                 order.setItems(cartsItems.stream().map(item -> {
                     item.setOrder(order);
                     item.setCart(null);
@@ -89,12 +89,12 @@ public class OrderServiceImpl implements OrderService {
             cartRepository.save(cart);
             orderRepository.save(order);
         });
-        Order o = orderRepository.findOneByOrderCode(orderDto.getOrderCode());
+        Order o = orderRepository.findOneByOrderCode(orderResource.getOrderCode());
         return (o != null) ? o : null;
     }
 
     @Override
-    public Order addItemsToOrder(String orderCode, ItemDto addedItem, Long userId) {
+    public Order addItemsToOrder(String orderCode, ItemResource addedItem, Long userId) {
         Item item = new Item();
         Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);

@@ -1,4 +1,4 @@
-package com.acme.eshop.dto;
+package com.acme.eshop.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductDto {
+public class ProductResource {
 
     private static final String PRICE_PATTERN = "\\\\d{1,3}[,\\\\.]?(\\\\d{1,2})?";
     private static final String NUMBER_PATTERN = "^\\d*$";
