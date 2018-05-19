@@ -6,6 +6,7 @@ import com.acme.eshop.domain.User;
 import com.acme.eshop.dto.AddressDto;
 import com.acme.eshop.repository.AddressRepository;
 import com.acme.eshop.repository.UserRepository;
+import com.acme.eshop.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +41,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address createUserAddress(AddressDto addressDto, User user) {
         Address address = addressConverter.getAddress(addressDto);
+        address.setCreatedDate(DateUtils.epochNow());
         address.setUser(user);
         return addressRepository.save(address);
     }

@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order showOrder(String orderCode, Long userId) {
         Order order = orderRepository.findOneByOrderCode(orderCode);
-        return (order != null && order.getUser().getId().equals(userId)) ? order : null;
+        return (order != null && (order.getUser().getId().equals(userId))||order.getUser().isAdmin()) ? order : null;
     }
 
     @Override
@@ -78,14 +78,14 @@ public class OrderServiceImpl implements OrderService {
         if (orderRepository.findOneByOrderCode(orderDto.getOrderCode()) != null)
             return null;
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
-            List<Item> cartsItems = cart.getItems();
-            Order order = orderConverter.getOrder(orderDto);
-            order.setItems(cartsItems.stream().map(item -> {
-                item.setOrder(order);
-                item.setCart(null);
-                return itemRepository.save(item);
-            }).collect(Collectors.toList()));
-            cart.setItems(null);
+                List<Item> cartsItems = cart.getItems();
+                Order order = orderConverter.getOrder(orderDto);
+                order.setItems(cartsItems.stream().map(item -> {
+                    item.setOrder(order);
+                    item.setCart(null);
+                    return itemRepository.save(item);
+                }).collect(Collectors.toList()));
+                cart.setItems(null);
             cartRepository.save(cart);
             orderRepository.save(order);
         });
