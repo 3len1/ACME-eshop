@@ -9,6 +9,8 @@ import com.acme.eshop.repository.CartRepository;
 import com.acme.eshop.repository.OrderRepository;
 import com.acme.eshop.repository.UserRepository;
 import com.acme.eshop.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +23,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Component("userService")
-@Transactional
 public class UserServiceImpl implements UserService {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     UserConverter userConverter;
@@ -42,13 +45,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId).get();
     }
 
+
+    @Transactional
     @Override
     public User createAccount(UserResource user) {
-        if (userRepository.findByEmail(user.getEmail()) != null)
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            log.warn("User with email [{}] already exist", user.getEmail());
             return null;
-        User retrieveUser;
-
-        retrieveUser = userConverter.getUser(user);
+        }
+        User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
             retrieveUser.setAdmin(false);
@@ -57,31 +62,39 @@ public class UserServiceImpl implements UserService {
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
             addressService.createUserAddress(user.getAddress(), retrieveUser);
+            log.info("User [{}] created", user.getEmail());
         }
-
         return userRepository.findByEmail(user.getEmail());
     }
 
+
+    @Transactional
     @Override
     public User updateAccount(UserResource user, Long userId) {
-        if (!userRepository.findById(userId).isPresent())
+        if (!userRepository.findById(userId).isPresent()) {
+            log.warn("User [{}] doesn't exist", userId);
             return null;
-        User retrieveUser;
-        retrieveUser = userConverter.getUser(user);
+        }
+        User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
+            retrieveUser.setEmail(userRepository.findById(userId).get().getEmail());
             userRepository.save(retrieveUser);
             retrieveUser.setAdmin(false);
             addressService.updateUserAddress(userRepository.findByEmail(user.getEmail()).getId(), user.getAddress());
+            log.info("User account[{}] update", retrieveUser.getEmail());
         }
         return userRepository.findByEmail(user.getEmail());
     }
 
+
+    @Transactional
     @Override
     public User adminCreateUser(UserResource user, boolean isAdmin) {
-        if (!isAdmin && (userRepository.findByEmail(user.getEmail()) != null))
+        if (!isAdmin && (userRepository.findByEmail(user.getEmail()) != null)) {
+            log.warn("User with email [{}] already exist", user.getEmail());
             return null;
-        User retrieveUser;
-        retrieveUser = userConverter.getUser(user);
+        }
+        User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
             retrieveUser = userRepository.save(retrieveUser);
@@ -89,23 +102,31 @@ public class UserServiceImpl implements UserService {
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
             addressService.createUserAddress(user.getAddress(), retrieveUser);
+            log.info("Admin create create [{}]", user.getEmail());
         }
         return userRepository.findByEmail(user.getEmail());
     }
 
+
+    @Transactional
     @Override
     public User adminUpdateUser(UserResource user, boolean isAdmin) {
-        if (isAdmin == false && (userRepository.findByEmail(user.getEmail()) == null))
+        if (!isAdmin && (userRepository.findByEmail(user.getEmail()) == null)) {
+            log.warn("User [{}] doesn't exist", user.getEmail());
             return null;
+        }
         User retrieveUser;
         retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             userRepository.save(retrieveUser);
             addressService.updateUserAddress(userRepository.findByEmail(user.getEmail()).getId(), user.getAddress());
+            log.info("Admin update user [{}]", retrieveUser.getEmail());
         }
         return userRepository.findByEmail(user.getEmail());
     }
 
+
+    @Transactional
     @Override
     public void adminDeleteUser(Long userId, boolean isAdmin) {
         userRepository.findById(userId).ifPresent(user -> {
@@ -115,6 +136,7 @@ public class UserServiceImpl implements UserService {
                 cartRepository.deleteAllByUser(user);
                 addressRepository.delete(user.getAddress());
                 userRepository.deleteById(userId);
+                log.info("Admin delete user's [{}] update", userId);
             }
         });
     }

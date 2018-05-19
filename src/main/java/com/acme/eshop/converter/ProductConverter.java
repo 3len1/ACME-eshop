@@ -22,7 +22,8 @@ public class ProductConverter {
             product.setImgUrl(productResource.getImgUrl());
             product.setPrice(new BigDecimal(productResource.getPrice()));
             product.setStockAmount(Integer.parseInt(productResource.getStock()));
-            product.setPurchased(Integer.parseInt(productResource.getPurchased()));
+            if (product.getStockAmount()<1) product.setStockAmount(1);
+            product.setPurchased(0);
             product.setCategory(category);
             return product;
         }).getOrElseGet(null);

@@ -10,6 +10,8 @@ import com.acme.eshop.repository.ProductRepository;
 import com.acme.eshop.repository.UserRepository;
 import com.acme.eshop.utils.DateUtils;
 import com.acme.eshop.utils.PriceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +23,10 @@ import java.util.Optional;
  * Created by Eleni on 17/5/2018.
  */
 @Component("cartService")
-@Transactional
 public class CartServiceImpl implements CartService {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     CartRepository cartRepository;
     @Autowired
@@ -38,6 +42,7 @@ public class CartServiceImpl implements CartService {
         return (user != null) ? cartRepository.findOneByUser(user) : null;
     }
 
+    @Transactional
     @Override
     public Cart addItemToCart(ItemResource addedItem, Long userId) {
         Item item = new Item();
@@ -47,25 +52,31 @@ public class CartServiceImpl implements CartService {
             item.setPrice(PriceUtils.bigDecimalMultiply(product.getPrice(), item.getAmount()));
             item.setCreatedDate(DateUtils.epochNow());
             item.setCart(getCartByUser(userId));
+            log.info("Product [{}] added [{}] times to user's [{}] cart", product.getProductCode(), item.getAmount(), userId);
         });
-
         if (item.getCart() != null) {
             itemRepository.save(item);
             return cartRepository.save(item.getCart());
         }
+        log.warn("Product with code [{}] does not exist", addedItem.getProductCode());
         return null;
     }
-
+    @Transactional
     @Override
     public Cart removeItemFromCart(String productCode, Long userId) {
         Cart cart = getCartByUser(userId);
         Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product -> {
-            if (cart != null)
+            if (cart != null) {
                 itemRepository.deleteAllByProductAndCart(product, cart);
+                log.info("Product [{}] successfully removed from users [{}] cart", productCode, userId);
+            }
+            else
+                log.warn("User [{}] does not have cart", userId);
         });
         return (cart != null) ? cart : null;
     }
 
+    @Transactional
     @Override
     public void emptyCart(Long userId) {
         User user = userRepository.findById(userId).orElseGet(null);
@@ -74,7 +85,10 @@ public class CartServiceImpl implements CartService {
                 itemRepository.deleteAllByCart(cart);
                 cart.setItems(null);
                 cartRepository.save(cart);
+                log.info("Empty user's [{}] cart", userId);
             });
+        else
+            log.warn("User [{}] does not exist", userId);
     }
 
     @Override

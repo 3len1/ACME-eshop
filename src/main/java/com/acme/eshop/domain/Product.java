@@ -118,6 +118,38 @@ public class Product extends PersistableEntity {
         this.items = items;
     }
 
+    public boolean incriseStockAmount(Integer amount){
+        if (this.stockAmount < 0 || amount < 0){
+            return false;
+        }
+        this.stockAmount += amount;
+        return true;
+    }
+
+    public boolean minusStockAmount(Integer amount){
+        if (this.stockAmount - amount < 1){
+          return false;
+        }
+        this.stockAmount -= amount;
+        return true;
+    }
+
+    public boolean incisePurchased(Integer amount){
+        if (this.purchased < 0 || amount < 0)
+            return false;
+        this.purchased += amount;
+        return true;
+    }
+
+    public boolean minusPurchased(Integer amount){
+        if (this.purchased - amount < 1)
+            return false;
+        this.purchased += amount;
+        return true;
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

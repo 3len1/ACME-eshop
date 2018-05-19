@@ -3,12 +3,15 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.OrderConverter;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
+import com.acme.eshop.domain.Product;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
 import com.acme.eshop.repository.*;
 import com.acme.eshop.utils.DateUtils;
 import com.acme.eshop.utils.PriceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +23,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component("orderService")
-@Transactional
 public class OrderServiceImpl implements OrderService {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     UserRepository userRepository;
@@ -45,54 +49,71 @@ public class OrderServiceImpl implements OrderService {
             return orderRepository.findAll(pageable);
         else if (user != null)
             return orderRepository.findByUser(user, pageable);
-        else
+        else {
+            log.warn("User [{}] does nto exist", userId);
             return null;
+        }
     }
 
     @Override
     public Page<Order> getAllByUser(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId).get();
-        return (user != null) ? orderRepository.findByUser(user, pageable) : null;
+        if (user == null){
+           log.warn("User [{}] does nto exist", userId);
+           return null;
+        }
+        return orderRepository.findByUser(user, pageable);
 
     }
 
     @Override
     public Order showOrder(String orderCode, Long userId) {
         Order order = orderRepository.findOneByOrderCode(orderCode);
+        if (order == null) log.warn("Order [{}] does not exist", orderCode);
         return (order != null && (order.getUser().getId().equals(userId))||order.getUser().isAdmin()) ? order : null;
     }
 
+    @Transactional
     @Override
     public Order payOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
         if (order != null) {
             order.setPaymentDate(DateUtils.epochNow());
             orderRepository.save(order);
+            log.info("User [{}] pay order [{}]", userId, orderCode);
             return order;
         }
+        log.warn("Order [{}] can't not found", orderCode);
         return null;
     }
 
+    @Transactional
     @Override
     public Order createOrder(OrderResource orderResource, Long userId) {
-        if (orderRepository.findOneByOrderCode(orderResource.getOrderCode()) != null)
+        if (orderRepository.findOneByOrderCode(orderResource.getOrderCode()) != null) {
+            log.warn("Order with code [{}] already exist", orderResource.getOrderCode());
             return null;
+        }
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
                 List<Item> cartsItems = cart.getItems();
                 Order order = orderConverter.getOrder(orderResource);
                 order.setItems(cartsItems.stream().map(item -> {
                     item.setOrder(order);
                     item.setCart(null);
+                    item.getProduct().incisePurchased(item.getAmount());
+                    item.getProduct().minusStockAmount(item.getAmount());
+                    productRepository.save(item.getProduct());
                     return itemRepository.save(item);
                 }).collect(Collectors.toList()));
                 cart.setItems(null);
             cartRepository.save(cart);
             orderRepository.save(order);
+            log.info("User [{}] create order [{}] successfully", userId, orderResource.getOrderCode());
         });
-        Order o = orderRepository.findOneByOrderCode(orderResource.getOrderCode());
-        return (o != null) ? o : null;
+        return orderRepository.findOneByOrderCode(orderResource.getOrderCode());
     }
 
+    @Transactional
     @Override
     public Order addItemsToOrder(String orderCode, ItemResource addedItem, Long userId) {
         Item item = new Item();
@@ -102,47 +123,66 @@ public class OrderServiceImpl implements OrderService {
             item.setPrice(PriceUtils.bigDecimalMultiply(product.getPrice(), item.getAmount()));
             item.setCreatedDate(DateUtils.epochNow());
             item.setOrder(showOrder(orderCode, userId));
+            product.minusStockAmount(item.getAmount());
+            product.incisePurchased(item.getAmount());
+            productRepository.save(product);
         });
 
         if (item.getOrder() != null) {
             itemRepository.save(item);
+            log.info("Product [{}] added to order [{}]", addedItem.getProductCode(), orderCode);
             return orderRepository.save(item.getOrder());
         }
+        log.warn("Product [{}] can not add to order [{}]", addedItem.getProductCode(), orderCode);
         return null;
     }
 
+    @Transactional
     @Override
     public Order removeItemFromOrder(String orderCode, String productCode, Long userId) {
         Order order = showOrder(orderCode, userId);
         Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product -> {
-            if (order != null)
+            if (order != null) {
+                product.incriseStockAmount(itemRepository.findOneByProductAndOrder(product, order).getAmount());
+                product.minusPurchased(itemRepository.findOneByProductAndOrder(product, order).getAmount());
                 itemRepository.deleteAllByProductAndOrder(product, order);
+                log.info("Product [{}] from order [{}]", productCode, orderCode);
+            }
         });
-        return (order != null) ? order : null;
+        return order;
     }
 
+    @Transactional
     @Override
     public boolean cancelOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        if (order != null) {
+        if (order != null && order.getPaymentDate()!=null) {
             order.setCanceled(true);
             orderRepository.save(order);
+            log.info("User [{}] cancel order [{}]", userId, orderCode);
             return true;
         }
+        log.warn("User [{}] can't cancel order [{}]", userId, orderCode);
         return false;
     }
 
+    @Transactional
     @Override
     public void deleteOrder(String orderCode, Long userId) {
         Optional.ofNullable(showOrder(orderCode, userId)).ifPresent(order -> {
             itemRepository.deleteAllByOrder(order);
             orderRepository.delete(order);
+            log.info("Admin delete user's [{}] order [{}]", userId, orderCode);
         });
     }
 
     @Override
     public List<Item> getAllItemsFromOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        return (order != null) ? itemRepository.findByOrder(order) : null;
+        if(order == null){
+            log.warn("User [{}] can't see order [{}]", userId, orderCode);
+            return null;
+        }
+        return itemRepository.findByOrder(order);
     }
 }

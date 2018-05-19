@@ -15,7 +15,7 @@ public interface ProductService {
    Product showProduct(String productCode);
    Product createProduct(ProductResource product);
    Product updateProduct(ProductResource product);
-   void deleteProduct(ProductResource product);
+   void deleteProduct(String productCode);
    Page<Product> getAll(Pageable pageable);
    Page<Product> mostPurchasedByCategory(String categoryName, Pageable pageable);
    Page<Product> productByCategory(String categoryName, Pageable pageable);
