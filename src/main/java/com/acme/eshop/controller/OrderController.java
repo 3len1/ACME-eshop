@@ -16,14 +16,18 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    //generally we use @Request params
+
     @GetMapping(value = "/orders")
     public ResponseEntity<Page<Order>> getAllOrder(Long userId, Pageable pageable) {
+        //check is user has an open season and he is admin
         return ResponseEntity.ok()
                 .body(orderService.getAllOrder(userId, pageable));
     }
 
     @GetMapping(value = "/orders/{userId}")
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable(name = "userId") Long userId, Pageable pageable) {
+        //check if user has an open season if not 401
         return ResponseEntity.ok()
                 .body(orderService.getAllByUser(userId, pageable));
     }
