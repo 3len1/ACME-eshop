@@ -1,19 +1,21 @@
 package com.acme.eshop.controller;
 
+import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.service.LoginService;
 import com.acme.eshop.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
 
 @RestController
 @Api(description = "Here you can control your orders", tags = "Orders")
@@ -23,24 +25,59 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private LoginService loginService;
-    //generally we use @Request params
 
     @ApiOperation(value = "Get all orders")
-    @GetMapping(value = "/orders")
-    public ResponseEntity<Page<Order>> getAllOrder(Long userId, Pageable pageable) {
-        //check if user has an open season if not 401
-        //you do not need userId you need token @requestheader, and get user if null 401 if not call
-        //user.getId() instead of userId
+    @RequestMapping(value = "/orders", method = RequestMethod.GET)
+    public ResponseEntity<Page<Order>> getAllOrder(@RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
+
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
         return ResponseEntity.ok()
-                .body(orderService.getAllOrder(userId, pageable));
+                .body(orderService.getAllOrder(loginService.getUser(sessionID).getId(), pageable));
     }
 
     @ApiOperation(value = "Get order by user")
-    @GetMapping(value = "/orders/{userId}")
-    public ResponseEntity<Page<Order>> getAllByUser(@PathVariable(name = "userId") Long userId, Pageable pageable) {
-        //you take token, take user if null -> 401 check is admin if not 403
-        //if getAllByUser return null send 404
+    @RequestMapping(value = "/{userId}/orders", method = RequestMethod.GET)
+    public ResponseEntity<Page<Order>> getAllByUser(@PathVariable(name = "userId") Long userId,
+                                                    @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
+
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        if(!loginService.getUser(sessionID).isAdmin())
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+
         return ResponseEntity.ok()
                 .body(orderService.getAllByUser(userId, pageable));
     }
+
+    @ApiOperation(value = "Get single order")
+    @RequestMapping(value = "/orders/{orderCode}", method = RequestMethod.GET)
+    public ResponseEntity<Order> getOrder(@PathVariable(name = "orderCode") String orderCode,
+                                          @RequestHeader("sessionID") UUID sessionID) {
+
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok()
+                .body(orderService.showOrder(orderCode, loginService.getUser(sessionID).getId()));
+    }
+
+    @ApiOperation(value = "Get all items from order")
+    @RequestMapping(value = "/{orderCode}/items", method = RequestMethod.GET)
+    public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable(name = "orderCode") String orderCode,
+                                                          @RequestHeader("sessionID") UUID sessionID) {
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok()
+                .body(orderService.getAllItemsFromOrder(orderCode, loginService.getUser(sessionID).getId()));
+    }
+
+
 }
