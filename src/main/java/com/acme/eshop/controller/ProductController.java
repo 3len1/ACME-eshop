@@ -33,15 +33,15 @@ public class ProductController {
 
     @ApiOperation("Get single product")
     @RequestMapping(value = "/products/{productCode}", method = RequestMethod.GET)
-    public ResponseEntity<Product> getProduct(@PathVariable(name = "productCode") String productCode) {
+    public ResponseEntity<Product> getProduct(@PathVariable String productCode) {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productService.showProduct(productCode));
     }
 
     @ApiOperation("Get products by category")
-    @RequestMapping(value = "/products/{categoryName}", method = RequestMethod.GET)
-    public ResponseEntity<Page<Product>> getProductByCategory(@PathVariable(name = "categoryName") String categoryName,
+    @RequestMapping(value = "/{categoryName}/products", method = RequestMethod.GET)
+    public ResponseEntity<Page<Product>> getProductByCategory(@PathVariable String categoryName,
                                                               Pageable pageable) {
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -49,9 +49,9 @@ public class ProductController {
     }
 
     @ApiOperation("Get most purchased products by category")
-    @RequestMapping(value = "/{categoryName}/products", method = RequestMethod.GET)
+    @RequestMapping(value = "/{categoryName}/products/top", method = RequestMethod.GET)
     public ResponseEntity<Page<Product>> getMostPurchasedByCategory(@RequestHeader("sessionID") UUID sessionID,
-                                                                    @PathVariable(name = "categoryName") String categoryName,
+                                                                    @PathVariable String categoryName,
                                                                     Pageable pageable) {
 
         if(!loginService.getUser(sessionID).isAdmin()) {
@@ -91,7 +91,7 @@ public class ProductController {
 
     @ApiOperation("Delete product")
     @RequestMapping(value = "/products/{productCode}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteProduct(@RequestParam(name = "productCode") String productCode,
+    public ResponseEntity deleteProduct(@RequestParam String productCode,
                                         @RequestHeader("sessionID") UUID sessionID) {
 
         if(!loginService.getUser(sessionID).isAdmin()) {
