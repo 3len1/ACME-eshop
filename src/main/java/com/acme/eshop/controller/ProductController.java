@@ -54,6 +54,10 @@ public class ProductController {
                                                                     @PathVariable String categoryName,
                                                                     Pageable pageable) {
 
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
         if(!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
@@ -66,6 +70,10 @@ public class ProductController {
     @RequestMapping(value = "/products", method = RequestMethod.POST)
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductResource product,
                                  @RequestHeader("sessionID") UUID sessionID) {
+
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
 
         if(!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
@@ -80,6 +88,10 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(@RequestBody ProductResource product,
                                                  @RequestHeader("sessionID") UUID sessionID) {
 
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
         if(!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
@@ -93,6 +105,10 @@ public class ProductController {
     @RequestMapping(value = "/products/{productCode}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProduct(@RequestParam String productCode,
                                         @RequestHeader("sessionID") UUID sessionID) {
+
+        if(loginService.getUser(sessionID) == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
 
         if(!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
