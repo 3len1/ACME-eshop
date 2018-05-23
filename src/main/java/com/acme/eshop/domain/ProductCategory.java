@@ -7,7 +7,7 @@ import java.util.List;
  * Created by Eleni on 5/8/2018.
  */
 @Entity
-@Table(name="PRODUCT_CATEGORYS")
+@Table(name="PRODUCT_CATEGORIES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ProductCategory extends PersistableEntity{
 

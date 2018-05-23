@@ -1,4 +1,4 @@
-insert into PRODUCT_CATEGORYS(ID, CATEGORY_NAME) values (1, 'Bombs'), (2, 'Pistols'), (3, 'Knife');
+insert into PRODUCT_CATEGORIES(ID, CATEGORY_NAME) values (1, 'Bombs'), (2, 'Pistols'), (3, 'Knife');
 
 insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (1, 'B001', 50.00, '/img/products/B001', 'A bomb with a clock so it explode on time', 5, 0, 1);
 insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (2, 'B002', 30.00, '/img/products/B002', 'Massive attack', 10, 0, 1);
