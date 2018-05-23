@@ -44,9 +44,17 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- H2 Database -->
+		<!--
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+		</dependency>
+		-->
+		<!-- postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- Lombok -->
 		<dependency>

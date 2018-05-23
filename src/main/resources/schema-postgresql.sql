@@ -1,0 +1,111 @@
+--DATABASE
+DROP DATABASE IF EXISTS ACME_ESHOP;
+
+CREATE DATABASE ACME_ESHOP
+    WITH
+    ENCODING = 'UTF-8'
+    CONNECTION LIMIT = -1;
+
+-- PRODUCT_CATEGORYS TABLE
+DROP TABLE IF EXISTS PRODUCT_CATEGORYS;
+
+CREATE TABLE PRODUCT_CATEGORYS (
+    ID Bigserial PRIMARY KEY NOT NULL,
+    CATEGORY_NAME varchar(100) NOT NULL,
+    CREATED_DATE DATE
+);
+
+insert into PRODUCT_CATEGORYS(ID, CATEGORY_NAME) values (1, 'Bombs'), (2, 'Pistols'), (3, 'Knife');
+
+
+-- PRODUCTS TABLE
+DROP TABLE IF EXISTS PRODUCTS;
+
+CREATE TABLE PRODUCTS (
+    ID Bigserial PRIMARY KEY NOT NULL,
+    PRODUCT_CODE varchar(200) NOT NULL,
+    PRICE decimal,
+    IMG_URL varchar(200),
+    DESCRIPTION varchar(200),
+    STOCK integer,
+    PURCHASED integer,
+    CREATED_DATE DATE,
+    CATEGORY_ID Bigserial REFERENCES PRODUCT_CATEGORYS (ID)
+);
+
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (1, 'B001', 50.00, '/img/products/B001', 'A bomb with a clock so it explode on time', 5, 0, 1);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (2, 'B002', 30.00, '/img/products/B002', 'Massive attack', 10, 0, 1);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (3, 'B003', 70.00, '/img/products/B003', 'A massive bomb in you hand', 6, 0, 1);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (4, 'P001', 30.00, '/img/products/P001', 'Like a smocking gun', 6, 0, 2);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (5, 'P002', 5.00, '/img/products/P002', '#SummerTimeFun', 15, 0, 2);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (6, 'P003', 25.00, '/img/products/P003', 'Let the fight begin', 15, 0, 2);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (7, 'K001', 55.00, '/img/products/K001', 'Like a ninja', 10, 0, 3);
+insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCHASED, CATEGORY_ID) values (8, 'K002', 20.00, '/img/products/K002', 'Like a Rambo', 17, 0, 3);
+
+-- USERS TABLE
+DROP TABLE IF EXISTS USERS;
+
+CREATE TABLE USERS (
+    ID Bigserial PRIMARY KEY NOT NULL,
+    EMAIL varchar(200),
+    PASSWORD varchar(100),
+    LAST_NAME varchar(100),
+    FIRST_NAME varchar(100),
+    GENDER varchar(30),
+    PHONE varchar(30),
+    BIRTHDAY date,
+    CREATED_DATE DATE,
+    IS_ADMIN boolean
+);
+
+insert into USERS(ID, EMAIL, PASSWORD, LAST_NAME, FIRST_NAME, GENDER, PHONE, BIRTHDAY, IS_ADMIN) values (1, 'vamphelp1@yahoo.com', 'vamphelp1', 'ACME', 'admin', 'MALE', '6953580942', '1990-05-11 00:00:01.000000' , true),(2, 'vamphelp2@yahoo.com', 'vamphelp2', 'LooneyToons', 'RoadRunner', 'MALE', '6978450687', '1985-12-05 00:00:01.000000'  , false), (3, 'vamphelp3@yahoo.com', 'vamphelp3', 'LooneyToons', 'Koyot', 'MALE' , '2105446786', '1976-05-11 00:00:01.000000' , false);
+
+-- ADDRESS TABLE
+DROP TABLE IF EXISTS ADDRESS;
+
+CREATE TABLE ADDRESS (
+    ID Bigserial PRIMARY KEY NOT NULL,
+    POSTAL_CODE varchar(10),
+    TOWN varchar(50),
+    STREET varchar(200) NOT NULL,
+    CREATED_DATE DATE,
+    USER_ID Bigserial REFERENCES USERS (ID) NOT NULL
+);
+
+insert into ADDRESS(ID, POSTAL_CODE, TOWN, STREET, USER_ID) values (1, '12133', 'Peristeri', 'Parodos Filippiados 23', 1),(2, '12351', 'Agia Varvara', 'Plati P 12', 2), (3, '12351', 'Agia Varvara', 'Plati P 14', 3);
+
+-- ORDER TABLE
+DROP TABLE IF EXISTS ORDERS;
+
+CREATE TABLE ORDERS (
+    ID Bigserial PRIMARY KEY NOT NULL,
+    ORDER_CODE varchar(200) NOT NULL,
+    PAYMENT_METH varchar(50) NOT NULL,
+    PAYMENT_DATE date,
+    TOTAL_PRICE decimal,
+    COMMENTS text,
+    CANCELED boolean,
+    CREATED_DATE DATE,
+    USER_ID Bigserial REFERENCES USERS (ID) NOT NULL
+);
+
+-- CART TABLE
+DROP TABLE IF EXISTS CART;
+
+CREATE TABLE CARTS (
+    ID Bigserial PRIMARY KEY NOT NULL,
+    USER_ID Bigserial REFERENCES USERS (ID) NOT NULL,
+    CREATED_DATE DATE
+);
+
+-- ITEMS TABLE
+DROP TABLE IF EXISTS ITEMS;
+
+CREATE TABLE ITEMS (
+    PRICE DECIMAL,
+    AMOUNT INTEGER,
+    PRODUCT_ID Bigserial REFERENCES PRODUCTS (ID) NOT NULL,
+    ORDER_ID Bigserial REFERENCES ORDERS (ID) NOT NULL,
+    CART_ID Bigserial REFERENCES CARTS (ID) NOT NULL,
+    CREATED_DATE DATE
+);
