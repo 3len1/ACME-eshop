@@ -14,13 +14,12 @@ public class ProductCategory extends PersistableEntity{
     @Column(name = "CATEGORY_NAME", unique = true, nullable = false)
     String name;
 
-    @OneToMany(mappedBy = "category", targetEntity = Product.class, fetch = FetchType.LAZY,
-               cascade = CascadeType.REMOVE, orphanRemoval=true)
-    List<Product> product;
+//    @OneToMany(mappedBy = "category", targetEntity = Product.class, fetch = FetchType.LAZY,
+//               cascade = CascadeType.REMOVE, orphanRemoval=true)
+//    List<Product> product;
 
-    public ProductCategory(String name, List<Product> product) {
+    public ProductCategory(String name) {
         this.name = name;
-        this.product = product;
     }
 
     public ProductCategory() {
@@ -34,13 +33,13 @@ public class ProductCategory extends PersistableEntity{
         this.name = name;
     }
 
-    public List<Product> getProduct() {
-        return product;
-    }
-
-    public void setProduct(List<Product> product) {
-        this.product = product;
-    }
+//    public List<Product> getProduct() {
+//        return product;
+//    }
+//
+//    public void setProduct(List<Product> product) {
+//        this.product = product;
+//    }
 
     @Override
     public boolean equals(Object o) {
