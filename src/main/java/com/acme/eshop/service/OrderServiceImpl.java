@@ -3,7 +3,6 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.OrderConverter;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
-import com.acme.eshop.domain.Product;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
