@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,15 +26,18 @@ public class LoginController {
 
     @ApiOperation(value = "Log in")
     @PostMapping(value = "/login")
-    public ResponseEntity<User> login(@RequestBody String email, @RequestBody String password ) {
-        if (email==null || password==null)
+    public ResponseEntity<User> login(@RequestBody Map<String, String> loginParams) {
+        String email = loginParams.get("email");
+        String password = loginParams.get("password");
+
+        if (email == null || password == null)
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         User user = loginService.logIn(email, password);
         return (user!=null)?ResponseEntity.status(HttpStatus.OK).body(user):new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @ApiOperation(value = "Log out")
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/logout")
     public void logout(@RequestHeader("sessionID") UUID sessionID) {
         loginService.logOut(sessionID);
     }
