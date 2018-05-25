@@ -33,7 +33,7 @@ public class LoginController {
     }
 
     @ApiOperation(value = "Log out")
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/logout")
     public void logout(@RequestHeader("sessionID") UUID sessionID) {
         loginService.logOut(sessionID);
     }
