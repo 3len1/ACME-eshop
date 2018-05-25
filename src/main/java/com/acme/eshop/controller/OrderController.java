@@ -21,7 +21,7 @@ import java.util.UUID;
 
 
 @RestController
-@Api(description = "Here you can control your orders", tags = "Orders")
+@Api(description = "Order Controller", tags = "Orders")
 public class OrderController {
 
     @Autowired
@@ -41,7 +41,7 @@ public class OrderController {
                 .body(orderService.getAllOrder(loginService.getUser(sessionID).getId(), pageable));
     }
 
-    @ApiOperation(value = "Get order by user")
+    @ApiOperation(value = "Get orders by user")
     @RequestMapping(value = "/{userId}/orders", method = RequestMethod.GET)
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable Long userId,
                                                     @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
