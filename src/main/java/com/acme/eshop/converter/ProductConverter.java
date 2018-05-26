@@ -20,9 +20,9 @@ public class ProductConverter {
             product.setProductCode(productResource.getProductCode());
             product.setDescription(productResource.getDescription());
             product.setImgUrl(productResource.getImgUrl());
-            product.setPrice(new BigDecimal(productResource.getPrice()));
+            product.setPrice(new BigDecimal(productResource.getPrice() / 100));
             product.setStockAmount(Integer.parseInt(productResource.getStock()));
-            if (product.getStockAmount()<1) product.setStockAmount(1);
+            if (product.getStockAmount() < 1) product.setStockAmount(1);
             product.setPurchased(0);
             product.setCategory(category);
             return product;

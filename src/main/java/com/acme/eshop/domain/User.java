@@ -6,7 +6,7 @@ import com.acme.eshop.utils.DateConverter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.List;
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class User extends PersistableEntity {
+public class User extends PersistableEntity implements Serializable {
 
 
     @Column(name = "EMAIL", nullable = false, length = 30, unique = true)
@@ -49,21 +49,14 @@ public class User extends PersistableEntity {
     private boolean isAdmin;
 
 
-    @OneToOne(mappedBy = "user", targetEntity = Address.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ADDRESS_ID")
     private Address address;
 
-    @OneToOne(mappedBy = "user", targetEntity = Cart.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
-    private Cart cart;
-
-
-    @OneToMany(mappedBy = "user", targetEntity = Order.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Order> orders;
 
     public User(String email, String password, UUID token, String lastName, String firstName,
                 Gender gender, @Size(max = 10) String phone, Long birthday,
-                boolean isAdmin, Address address, Cart cart, List<Order> orders) {
+                boolean isAdmin, Address address) {
         this.email = email;
         this.password = password;
         this.token = token;
@@ -74,8 +67,6 @@ public class User extends PersistableEntity {
         this.birthday = birthday;
         this.isAdmin = isAdmin;
         this.address = address;
-        this.cart = cart;
-        this.orders = orders;
     }
 
     public User() {
@@ -161,22 +152,6 @@ public class User extends PersistableEntity {
         this.address = address;
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -192,4 +167,6 @@ public class User extends PersistableEntity {
     public int hashCode() {
         return getEmail() != null ? getEmail().hashCode() : 0;
     }
+
+
 }

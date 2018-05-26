@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class LoginController {
     LoginService loginService;
 
     @ApiOperation(value = "Log in")
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> login(@RequestBody Map<String, String> loginParams) {
         String email = loginParams.get("email");
         String password = loginParams.get("password");
@@ -33,7 +34,7 @@ public class LoginController {
         if (email == null || password == null)
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         User user = loginService.logIn(email, password);
-        return (user!=null)?ResponseEntity.status(HttpStatus.OK).body(user):new ResponseEntity(HttpStatus.NOT_FOUND);
+        return (user != null) ? ResponseEntity.status(HttpStatus.OK).body(user) : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @ApiOperation(value = "Log out")

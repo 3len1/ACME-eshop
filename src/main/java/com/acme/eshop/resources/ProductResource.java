@@ -17,7 +17,7 @@ import javax.validation.constraints.Pattern;
 @Setter
 public class ProductResource {
 
-    private static final String PRICE_PATTERN = "\\\\d{1,3}[,\\\\.]?(\\\\d{1,2})?";
+    //private static final String PRICE_PATTERN = "\\\\d{1,3}[,\\\\.]?(\\\\d{1,2})?";
     private static final String NUMBER_PATTERN = "^\\d*$";
     private static final String CATEGORY_PATTERN = "^[A-z]+$";
     private static final String PATH_PATTERN = "^[:.A-z0-9\\/]+$";
@@ -26,8 +26,8 @@ public class ProductResource {
     private String productCode;
 
     @NotNull(message = "{product.price.null}")
-    @Pattern(regexp = PRICE_PATTERN, message = "{product.price.invalid}")
-    private String price;
+    //@Pattern(regexp = PRICE_PATTERN, message = "{product.price.invalid}")
+    private Long price;
 
     @Pattern(regexp = PATH_PATTERN, message = "{product.imgUrl.invalid}")
     private String imgUrl;

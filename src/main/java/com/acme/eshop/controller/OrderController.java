@@ -30,7 +30,7 @@ public class OrderController {
     private LoginService loginService;
 
     @ApiOperation(value = "Get all orders")
-    @RequestMapping(value = "/orders", method = RequestMethod.GET)
+    @GetMapping(value = "/orders")
     public ResponseEntity<Page<Order>> getAllOrder(@RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
 
         if(loginService.getUser(sessionID) == null) {
@@ -42,7 +42,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Get orders by user")
-    @RequestMapping(value = "/{userId}/orders", method = RequestMethod.GET)
+    @GetMapping(value = "/{userId}/orders")
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable Long userId,
                                                     @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
 
@@ -58,7 +58,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Get single order")
-    @RequestMapping(value = "/orders/{orderCode}", method = RequestMethod.GET)
+    @GetMapping(value = "/orders/{orderCode}")
     public ResponseEntity<Order> getOrder(@PathVariable String orderCode,
                                           @RequestHeader("sessionID") UUID sessionID) {
 
@@ -71,7 +71,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Get all items from order")
-    @RequestMapping(value = "/{orderCode}/items", method = RequestMethod.GET)
+    @GetMapping(value = "/{orderCode}/items")
     public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable String orderCode,
                                                           @RequestHeader("sessionID") UUID sessionID) {
         if(loginService.getUser(sessionID) == null) {
@@ -83,7 +83,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Create an Order")
-    @RequestMapping(value = "/orders", method = RequestMethod.POST)
+    @PostMapping(value = "/orders")
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderResource order, @RequestHeader("sessionID") UUID sessionID) {
         if(loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -95,7 +95,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Delete an Order")
-    @RequestMapping(value = "/orders/{orderCode}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/orders/{orderCode}")
     public ResponseEntity deleteOrder(@RequestHeader("sessionID") UUID sessionID, @PathVariable String orderCode) {
         if(loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -106,7 +106,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Remove an item from order")
-    @RequestMapping(value = "/orders/{orderCode}/items/{productCode}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/orders/{orderCode}/items/{productCode}")
     public ResponseEntity removeItemFromOrder(@PathVariable String orderCode,
                                               @PathVariable String productCode,
                                               @RequestHeader("sessionID") UUID sessionID) {
@@ -119,7 +119,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Add items to order")
-    @RequestMapping(value = "/orders/{orderCode}/items", method = RequestMethod.POST)
+    @PostMapping(value = "/orders/{orderCode}/items")
     public ResponseEntity<Order> addItemsToOrder(@Valid @RequestBody ItemResource item,
                                                  @PathVariable String orderCode,
                                                  @RequestHeader("sessionID") UUID sessionID) {
@@ -134,7 +134,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Pay the order")
-    @RequestMapping(value = "/orders/{orderCode}", method = RequestMethod.PUT)
+    @PutMapping(value = "/orders/{orderCode}")
     public ResponseEntity<Order> payOrder(@PathVariable String orderCode,
                                           @RequestHeader("sessionID") UUID sessionID) {
 
@@ -147,7 +147,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Cancel order")
-    @RequestMapping(value = "/orders/{orderCode}/cancel", method = RequestMethod.PUT)
+    @PutMapping(value = "/orders/{orderCode}/cancel")
     public ResponseEntity calncelOrder(@PathVariable String orderCode,
                                        @RequestHeader("sessionID") UUID sessionID) {
 

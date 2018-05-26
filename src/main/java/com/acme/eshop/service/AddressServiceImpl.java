@@ -29,7 +29,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address getUserAddress(Long userId) {
         User user = userRepository.findById(userId).orElseGet(null);
-        return (user != null) ? addressRepository.findByUser(user) : null;
+        return (user != null) ? addressRepository.findByUserId(user.getId()) : null;
     }
 
     @Transactional
@@ -51,7 +51,7 @@ public class AddressServiceImpl implements AddressService {
     public Address createUserAddress(AddressResource addressResource, User user) {
         Address address = addressConverter.getAddress(addressResource);
         address.setCreatedDate(DateUtils.epochNow());
-        address.setUser(user);
+        address.setUserId(user.getId());
         log.info("Address for user [{}] created",user.getId());
         return addressRepository.save(address);
     }

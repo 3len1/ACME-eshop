@@ -37,7 +37,7 @@ public class LogInServiceImpl implements LoginService {
             log.info("User [{}} log in successfully", user.getId());
             return userRepository.save(user);
         }
-        log.warn("Credentials email [{}] and password [{}] are nyo correct" , email , password);
+        log.warn("Credentials email [{}] and password [{}] are not correct", email, password);
         return null;
     }
 
@@ -48,8 +48,8 @@ public class LogInServiceImpl implements LoginService {
         if (users.size() == 1) {
             users.get(0).setToken(null);
             userRepository.save(users.get(0));
-        }
-        else if (users.size()> 1)
+            log.info("User [{}} log out successfully ", users.get(0).getId());
+        } else if (users.size() > 1)
             log.warn("Token [{}} is not unique", token);
         else
             log.warn("Token [{}] is not valid", token);

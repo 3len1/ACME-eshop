@@ -21,15 +21,14 @@ public class Address extends PersistableEntity {
     @Column(name = "STREET", length = 60)
     private String street;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private User user;
+    @Column(name = "USER_ID")
+    private Long userId;
 
-    public Address(@Size(max = 5) String postalCode, String town, String street, User user) {
+    public Address(@Size(max = 5) String postalCode, String town, String street, Long userId) {
         this.postalCode = postalCode;
         this.town = town;
         this.street = street;
-        this.user = user;
+        this.userId = userId;
     }
 
     public Address() {
@@ -59,11 +58,11 @@ public class Address extends PersistableEntity {
         this.street = street;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
