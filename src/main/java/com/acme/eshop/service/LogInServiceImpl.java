@@ -35,7 +35,7 @@ public class LogInServiceImpl implements LoginService {
         if (user != null) {
             user.setToken(UUID.randomUUID());
             log.info("User [{}} log in successfully", user.getId());
-            return user;
+            return userRepository.save(user);
         }
         log.warn("Credentials email [{}] and password [{}] are nyo correct" , email , password);
         return null;
@@ -45,8 +45,10 @@ public class LogInServiceImpl implements LoginService {
     @Override
     public void logOut(UUID token) {
         List<User> users = userRepository.findByToken(token);
-        if (users.size() == 1)
+        if (users.size() == 1) {
             users.get(0).setToken(null);
+            userRepository.save(users.get(0));
+        }
         else if (users.size()> 1)
             log.warn("Token [{}} is not unique", token);
         else
