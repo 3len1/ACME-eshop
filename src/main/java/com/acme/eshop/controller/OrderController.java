@@ -2,6 +2,7 @@ package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
+import com.acme.eshop.exceptions.UserNotFoundException;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
 import com.acme.eshop.service.LoginService;
@@ -33,7 +34,7 @@ public class OrderController {
     @GetMapping(value = "/orders")
     public ResponseEntity<Page<Order>> getAllOrder(@RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
@@ -46,11 +47,11 @@ public class OrderController {
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable Long userId,
                                                     @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        if(!loginService.getUser(sessionID).isAdmin())
+        if (!loginService.getUser(sessionID).isAdmin())
             return new ResponseEntity(HttpStatus.FORBIDDEN);
 
         return ResponseEntity.ok()
@@ -62,7 +63,7 @@ public class OrderController {
     public ResponseEntity<Order> getOrder(@PathVariable String orderCode,
                                           @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
@@ -73,8 +74,8 @@ public class OrderController {
     @ApiOperation(value = "Get all items from order")
     @GetMapping(value = "/{orderCode}/items")
     public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable String orderCode,
-                                                          @RequestHeader("sessionID") UUID sessionID) {
-        if(loginService.getUser(sessionID) == null) {
+                                                           @RequestHeader("sessionID") UUID sessionID) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
@@ -85,7 +86,7 @@ public class OrderController {
     @ApiOperation(value = "Create an Order")
     @PostMapping(value = "/orders")
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderResource order, @RequestHeader("sessionID") UUID sessionID) {
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
@@ -97,7 +98,7 @@ public class OrderController {
     @ApiOperation(value = "Delete an Order")
     @DeleteMapping(value = "/orders/{orderCode}")
     public ResponseEntity deleteOrder(@RequestHeader("sessionID") UUID sessionID, @PathVariable String orderCode) {
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
@@ -110,7 +111,7 @@ public class OrderController {
     public ResponseEntity removeItemFromOrder(@PathVariable String orderCode,
                                               @PathVariable String productCode,
                                               @RequestHeader("sessionID") UUID sessionID) {
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         orderService.removeItemFromOrder(orderCode, productCode, loginService.getUser(sessionID).getId());
@@ -124,12 +125,15 @@ public class OrderController {
                                                  @PathVariable String orderCode,
                                                  @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(orderService.addItemsToOrder(orderCode, item, loginService.getUser(sessionID).getId()));
+
+    }
+
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleError() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 
     }
 
@@ -138,7 +142,7 @@ public class OrderController {
     public ResponseEntity<Order> payOrder(@PathVariable String orderCode,
                                           @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
@@ -151,7 +155,7 @@ public class OrderController {
     public ResponseEntity calncelOrder(@PathVariable String orderCode,
                                        @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 

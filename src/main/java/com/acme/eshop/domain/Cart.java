@@ -15,13 +15,8 @@ public class Cart extends PersistableEntity {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Item> items;
-
-    public Cart(User user, List<Item> items) {
+    public Cart(User user) {
         this.user = user;
-        this.items = items;
     }
 
     public Cart() {
@@ -35,11 +30,5 @@ public class Cart extends PersistableEntity {
         this.user = user;
     }
 
-    public List<Item> getItems() {
-        return items;
-    }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
 }

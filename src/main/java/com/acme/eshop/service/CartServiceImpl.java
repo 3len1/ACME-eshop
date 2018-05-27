@@ -3,6 +3,8 @@ package com.acme.eshop.service;
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.exceptions.ProductNotFoundException;
+import com.acme.eshop.exceptions.UserNotFoundException;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.repository.CartRepository;
 import com.acme.eshop.repository.ItemRepository;
@@ -39,7 +41,11 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart getCartByUser(Long userId) {
         User user = userRepository.findById(userId).orElseGet(null);
-        return (user != null) ? cartRepository.findOneByUser(user) : null;
+        if (user == null) {
+            log.warn("User [{}] not exist", userId);
+            throw new UserNotFoundException("User not found");
+        }
+        return cartRepository.findOneByUser(user);
     }
 
     @Transactional
@@ -53,14 +59,15 @@ public class CartServiceImpl implements CartService {
             item.setCreatedDate(DateUtils.epochNow());
             item.setCart(getCartByUser(userId));
             log.info("Product [{}] added [{}] times to user's [{}] cart", product.getProductCode(), item.getAmount(), userId);
-        });
-        if (item.getCart() != null) {
             itemRepository.save(item);
+        });
+        if (item.getCart() != null)
             return cartRepository.save(item.getCart());
-        }
+
         log.warn("Product with code [{}] does not exist", addedItem.getProductCode());
-        return null;
+        throw new ProductNotFoundException("Product not found");
     }
+
     @Transactional
     @Override
     public Cart removeItemFromCart(String productCode, Long userId) {
@@ -70,10 +77,10 @@ public class CartServiceImpl implements CartService {
                 itemRepository.deleteAllByProductAndCart(product, cart);
                 log.info("Product [{}] successfully removed from users [{}] cart", productCode, userId);
             }
-            else
-                log.warn("User [{}] does not have cart", userId);
         });
-        return (cart != null) ? cart : null;
+        if (cart != null) return cart;
+        log.warn("Product with code [{}] does not exist", productCode);
+        throw new ProductNotFoundException("Product not found");
     }
 
     @Transactional
@@ -83,12 +90,12 @@ public class CartServiceImpl implements CartService {
         if (user != null)
             Optional.ofNullable(cartRepository.findOneByUser(user)).ifPresent(cart -> {
                 itemRepository.deleteAllByCart(cart);
-                cart.setItems(null);
-                cartRepository.save(cart);
                 log.info("Empty user's [{}] cart", userId);
             });
-        else
+        else {
             log.warn("User [{}] does not exist", userId);
+            throw new UserNotFoundException("User not found");
+        }
     }
 
     @Override
