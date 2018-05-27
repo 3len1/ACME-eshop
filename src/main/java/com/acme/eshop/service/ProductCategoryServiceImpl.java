@@ -1,6 +1,8 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.ProductCategory;
+import com.acme.eshop.exceptions.CategoryAlreadyExistException;
+import com.acme.eshop.exceptions.CategoryNotFoundException;
 import com.acme.eshop.repository.ProductCategoryRepository;
 import com.acme.eshop.repository.ProductRepository;
 import com.acme.eshop.utils.DateUtils;
@@ -33,7 +35,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     public ProductCategory createProductCategory(String categoryName) {
         if (productCategoryRepository.findByName(categoryName) != null) {
             log.warn("Category [{}] already exist", categoryName);
-            return null;
+            throw new CategoryAlreadyExistException("Category already exist");
         }
         ProductCategory category = new ProductCategory();
         category.setCreatedDate(DateUtils.epochNow());
@@ -52,7 +54,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
             return productCategoryRepository.save(category);
         }
         log.warn("Category [{}] does not exist", categoryName);
-        return null;
+        throw new CategoryNotFoundException("Category does not exist");
     }
 
 
@@ -64,8 +66,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
             productRepository.deleteByCategory(category);
             productCategoryRepository.delete(category);
             log.info("Admin delete category [{}]", categoryName);
-        }else
+        }else {
             log.warn("Category [{}] does not exist", categoryName);
+            throw new CategoryNotFoundException("Category does not exist");
+        }
     }
 
     @Override

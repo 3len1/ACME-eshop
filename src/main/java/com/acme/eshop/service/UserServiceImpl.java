@@ -3,6 +3,10 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.UserConverter;
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.exceptions.ResourceNotValid;
+import com.acme.eshop.exceptions.UserAlreadyExistException;
+import com.acme.eshop.exceptions.UserNotFoundException;
+import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.repository.AddressRepository;
 import com.acme.eshop.repository.CartRepository;
@@ -51,20 +55,20 @@ public class UserServiceImpl implements UserService {
     public User createAccount(UserResource user) {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             log.warn("User with email [{}] already exist", user.getEmail());
-            return null;
+            throw new UserAlreadyExistException("User already exist");
         }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
             retrieveUser.setAdmin(false);
-            retrieveUser = userRepository.save(retrieveUser);
             Cart cart = new Cart();
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
             addressService.createUserAddress(user.getAddress(), retrieveUser);
             log.info("User [{}] created", user.getEmail());
+            return userRepository.save(retrieveUser);
         }
-        return userRepository.findByEmail(user.getEmail());
+        throw new ResourceNotValid("User resource is not valid, try again");
     }
 
 
@@ -73,56 +77,58 @@ public class UserServiceImpl implements UserService {
     public User updateAccount(UserResource user, Long userId) {
         if (!userRepository.findById(userId).isPresent()) {
             log.warn("User [{}] doesn't exist", userId);
-            return null;
+            throw new UserNotFoundException("User does not exist");
         }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setEmail(userRepository.findById(userId).get().getEmail());
-            userRepository.save(retrieveUser);
             retrieveUser.setAdmin(false);
             addressService.updateUserAddress(userRepository.findByEmail(user.getEmail()).getId(), user.getAddress());
             log.info("User account[{}] update", retrieveUser.getEmail());
+            return userRepository.save(retrieveUser);
         }
-        return userRepository.findByEmail(user.getEmail());
+        throw new ResourceNotValid("User resource is not valid, try again");
     }
 
 
     @Transactional
     @Override
     public User adminCreateUser(UserResource user, boolean isAdmin) {
-        if (!isAdmin && (userRepository.findByEmail(user.getEmail()) != null)) {
+        if (!isAdmin) throw new WrongCredentialsException("You are not aloud to make other accounts");
+        if (userRepository.findByEmail(user.getEmail()) != null) {
             log.warn("User with email [{}] already exist", user.getEmail());
-            return null;
+            throw new UserAlreadyExistException("This user already exist");
         }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
-            retrieveUser = userRepository.save(retrieveUser);
             Cart cart = new Cart();
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
             addressService.createUserAddress(user.getAddress(), retrieveUser);
             log.info("Admin create create [{}]", user.getEmail());
+            return userRepository.save(retrieveUser);
         }
-        return userRepository.findByEmail(user.getEmail());
+        throw new ResourceNotValid("User resource is not valid, try again");
     }
 
 
     @Transactional
     @Override
     public User adminUpdateUser(UserResource user, boolean isAdmin) {
-        if (!isAdmin && (userRepository.findByEmail(user.getEmail()) == null)) {
+        if (!isAdmin) throw new WrongCredentialsException("You are not aloud to make other accounts");
+        if (userRepository.findByEmail(user.getEmail()) == null){
             log.warn("User [{}] doesn't exist", user.getEmail());
-            return null;
+            throw new UserNotFoundException("This user does not exist");
         }
-        User retrieveUser;
-        retrieveUser = userConverter.getUser(user);
+        User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
-            userRepository.save(retrieveUser);
             addressService.updateUserAddress(userRepository.findByEmail(user.getEmail()).getId(), user.getAddress());
             log.info("Admin update user [{}]", retrieveUser.getEmail());
+            return userRepository.save(retrieveUser);
+
         }
-        return userRepository.findByEmail(user.getEmail());
+        throw new ResourceNotValid("User resource is not valid, try again");
     }
 
 
@@ -138,22 +144,24 @@ public class UserServiceImpl implements UserService {
                 userRepository.deleteById(userId);
                 log.info("Admin delete user's [{}] update", userId);
             }
+            else{
+                throw new WrongCredentialsException("You are not aloud to make other accounts");
+            }
         });
     }
 
     @Override
     public Page<User> getAll(boolean isAdmin, Pageable pageable) {
-        return isAdmin ? userRepository.findAll(pageable) : null;
+        if(!isAdmin) throw new WrongCredentialsException("You are not aloud to see other account");
+        return userRepository.findAll(pageable);
     }
 
     @Override
     public List<User> getAllOrderByNumberOFOrders(boolean isAdmin) {
         //TODO check if it work i am not sure at all is there any better way
         Map<Integer, User> orderedUsers = new TreeMap<>();
-        if (!isAdmin) return null;
-        userRepository.findAll().stream().forEach(user -> {
-            orderedUsers.put(orderRepository.countByUser(user), user);
-        });
+        if (!isAdmin) throw new WrongCredentialsException("You are not aloud to see other account");
+        userRepository.findAll().forEach(user -> orderedUsers.put(orderRepository.countByUser(user), user));
         List<User> users = new ArrayList<>();
         orderedUsers.forEach((k, v) -> users.add(orderedUsers.get(k)));
         return users;
