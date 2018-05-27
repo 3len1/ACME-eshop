@@ -12,19 +12,12 @@ import java.util.List;
 public interface UserService {
 
     User showUser(Long userId);
-
     User createAccount(UserResource user);
-
     User updateAccount(UserResource user, Long userId);
-
     User adminCreateUser(UserResource user, boolean isAdmin);
-
     User adminUpdateUser(UserResource user, boolean isAdmin);
-
     void adminDeleteUser(Long userId, boolean isAdmin);
-
     Page<User> getAll(boolean isAdmin, Pageable pageable);
-
     List<User> getAllOrderByNumberOFOrders(boolean isAdmin);
 
 }

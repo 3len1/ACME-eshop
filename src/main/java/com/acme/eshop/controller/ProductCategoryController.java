@@ -34,35 +34,35 @@ public class ProductCategoryController {
                 .body(productCategoryService.getAll());
     }
 
-    @ApiOperation("Create product category")
+    @ApiOperation("Admin create product category")
     @PostMapping(value = "/admin/categories")
     public ResponseEntity<ProductCategory> createCategory(@NotNull @RequestBody String name,
-                                                 @RequestHeader("sessionID") UUID sessionID) {
+                                                          @RequestHeader("sessionID") UUID sessionID) {
         if (!loginService.getUser(sessionID).isAdmin())
             throw new WrongCredentialsException("Only admin can create categories");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productCategoryService.createProductCategory(name));
     }
 
-    @ApiOperation("Update product category")
-    @PutMapping(value = "/admin/categories")
-    public ResponseEntity<ProductCategory> updateCategory(@RequestParam String categoryName,
-                                                 @RequestHeader("sessionID") UUID sessionID) {
+    @ApiOperation("Admin update product category")
+    @PutMapping(value = "/admin/categories/{categoryName}")
+    public ResponseEntity<ProductCategory> updateCategory(@PathVariable(name = "categoryName") String name,
+                                                          @RequestHeader("sessionID") UUID sessionID) {
         if (!loginService.getUser(sessionID).isAdmin())
             throw new WrongCredentialsException("Only admin can update categories");
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(productCategoryService.updateProductCategory(categoryName));
+                .body(productCategoryService.updateProductCategory(name));
     }
 
-    @ApiOperation("Delete product category")
-    @DeleteMapping(value = "/admin/categories")
-    public ResponseEntity deleteProduct(@RequestParam String categoryName,
+    @ApiOperation("Admin delete product category")
+    @DeleteMapping(value = "/admin/categories/{categoryName}")
+    public ResponseEntity deleteProduct(@PathVariable(name = "categoryName") String name,
                                         @RequestHeader("sessionID") UUID sessionID) {
 
         if (!loginService.getUser(sessionID).isAdmin())
             throw new WrongCredentialsException("Only admin can delete categories");
 
-        productCategoryService.deleteProductCategory(categoryName);
+        productCategoryService.deleteProductCategory(name);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

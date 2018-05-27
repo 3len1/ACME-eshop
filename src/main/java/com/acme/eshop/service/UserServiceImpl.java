@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User adminUpdateUser(UserResource user, boolean isAdmin) {
         if (!isAdmin) throw new WrongCredentialsException("You are not aloud to make other accounts");
-        if (userRepository.findByEmail(user.getEmail()) == null){
+        if (userRepository.findByEmail(user.getEmail()) == null) {
             log.warn("User [{}] doesn't exist", user.getEmail());
             throw new UserNotFoundException("This user does not exist");
         }
@@ -143,8 +143,7 @@ public class UserServiceImpl implements UserService {
                 addressRepository.delete(user.getAddress());
                 userRepository.deleteById(userId);
                 log.info("Admin delete user's [{}] update", userId);
-            }
-            else{
+            } else {
                 throw new WrongCredentialsException("You are not aloud to make other accounts");
             }
         });
@@ -152,7 +151,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> getAll(boolean isAdmin, Pageable pageable) {
-        if(!isAdmin) throw new WrongCredentialsException("You are not aloud to see other account");
+        if (!isAdmin) throw new WrongCredentialsException("You are not aloud to see other account");
         return userRepository.findAll(pageable);
     }
 

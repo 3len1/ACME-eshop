@@ -12,7 +12,7 @@ import java.util.List;
  * Created by Eleni on 5/8/2018.
  */
 @Entity
-@Table(name="ORDERS")
+@Table(name = "ORDERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Order extends PersistableEntity implements Serializable {
 
@@ -37,22 +37,22 @@ public class Order extends PersistableEntity implements Serializable {
     private boolean canceled;
 
 
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
-    @JoinColumn(name="USER_ID",referencedColumnName="ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
 
     @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
-               cascade = CascadeType.REMOVE, orphanRemoval=true)
+            cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Item> items;
 
     public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice,
-                 String comments,boolean canceled, User user, List<Item> items) {
+                 String comments, boolean canceled, User user, List<Item> items) {
         this.orderCode = orderCode;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
         this.totalPrice = totalPrice;
         this.comments = comments;
-        this.canceled =canceled;
+        this.canceled = canceled;
         this.user = user;
         this.items = items;
     }
@@ -100,9 +100,13 @@ public class Order extends PersistableEntity implements Serializable {
         this.comments = comments;
     }
 
-    public boolean isCanceled() { return canceled; }
+    public boolean isCanceled() {
+        return canceled;
+    }
 
-    public void setCanceled(boolean canceled) { this.canceled = canceled;}
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
+    }
 
     public User getUser() {
         return user;

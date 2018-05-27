@@ -66,7 +66,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
             productRepository.deleteByCategory(category);
             productCategoryRepository.delete(category);
             log.info("Admin delete category [{}]", categoryName);
-        }else {
+        } else {
             log.warn("Category [{}] does not exist", categoryName);
             throw new CategoryNotFoundException("Category does not exist");
         }

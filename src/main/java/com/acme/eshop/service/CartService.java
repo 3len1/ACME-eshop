@@ -14,13 +14,9 @@ import java.util.List;
 public interface CartService {
 
     Cart getCartByUser(Long userId);
-
     Cart addItemToCart(ItemResource addedItem, Long userId);
-
     Cart removeItemFromCart(String productCode, Long userId);
-
     void emptyCart(Long userId);
-
     List<Item> getAllItemsFromCart(Long userId);
 
 }

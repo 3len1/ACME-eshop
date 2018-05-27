@@ -12,8 +12,6 @@ import java.util.UUID;
 public interface LoginService {
 
     User getUser(UUID token);
-
     User logIn(String email, String password);
-
     void logOut(UUID token);
 }

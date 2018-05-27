@@ -127,13 +127,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> search(String categoryName, BigDecimal priceMin, BigDecimal priceMax, Integer purchasedMin, Integer purchasedMax, Pageable pageable) {
-        ProductCategory category = productCategoryRepository.findByName(categoryName);
-        if (category == null) {
-            log.warn("Category [{}] does not exist", categoryName);
-            throw new CategoryNotFoundException("Category does not exist");
-        }
-        return productRepository.findWithCriteria(category, priceMin, priceMax, purchasedMin, purchasedMax, pageable);
+    public Page<Product> search(String categoryName, Long priceMin, Long priceMax, Integer purchasedMin, Integer purchasedMax, Pageable pageable) {
+        return productRepository.findWithCriteria((categoryName!=null)?productCategoryRepository.findByName(categoryName):null,
+                (priceMin!=null)? BigDecimal.valueOf(priceMin/100): null, (priceMax!=null)? BigDecimal.valueOf(priceMax/100): null,
+                purchasedMin, purchasedMax, pageable);
     }
 
     @Override

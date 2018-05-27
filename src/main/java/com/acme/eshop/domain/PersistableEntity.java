@@ -9,7 +9,6 @@ import org.springframework.data.domain.Persistable;
 import javax.persistence.*;
 
 
-
 /**
  * Created by Eleni on 5/7/2018.
  */
@@ -22,7 +21,7 @@ abstract public class PersistableEntity implements Persistable<Long> {
     private Long id;
 
     @CreatedDate
-    @Convert(converter=DateConverter.class)
+    @Convert(converter = DateConverter.class)
     private Long createdDate;
 
     public PersistableEntity() {

@@ -61,7 +61,7 @@ public class LogInServiceImpl implements LoginService {
         } else if (users.size() > 1) {
             log.warn("Token [{}} is not unique", token);
             throw new NotIdenticalUserException("User is not identical");
-        }else {
+        } else {
             log.warn("Token [{}] is not valid", token);
             throw new WrongCredentialsException("User haven't login yet");
         }
