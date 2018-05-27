@@ -4,6 +4,7 @@ import com.acme.eshop.enums.PaymentType;
 import com.acme.eshop.utils.DateConverter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name="ORDERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Order extends PersistableEntity {
+public class Order extends PersistableEntity implements Serializable {
 
     @Column(name = "ORDER_CODE", unique = true)
     private String orderCode;

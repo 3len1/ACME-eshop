@@ -1,6 +1,7 @@
 package com.acme.eshop.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "CART")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Cart extends PersistableEntity {
+public class Cart extends PersistableEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)

@@ -1,6 +1,7 @@
 package com.acme.eshop.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "PRODUCT_CATEGORIES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class ProductCategory extends PersistableEntity {
+public class ProductCategory extends PersistableEntity implements Serializable {
 
     @Column(name = "CATEGORY_NAME", unique = true, nullable = false)
     String name;

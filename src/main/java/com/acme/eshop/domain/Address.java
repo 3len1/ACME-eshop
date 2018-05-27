@@ -2,6 +2,7 @@ package com.acme.eshop.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * Created by Eleni on 5/8/2018.
@@ -9,7 +10,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "ADDRESS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Address extends PersistableEntity {
+public class Address extends PersistableEntity implements Serializable {
 
     @Column(name = "POSTAL_CODE")
     @Size(max = 5)

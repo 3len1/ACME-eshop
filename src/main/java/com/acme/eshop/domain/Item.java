@@ -1,6 +1,7 @@
 package com.acme.eshop.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "ITEMS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Item extends PersistableEntity {
+public class Item extends PersistableEntity implements Serializable {
 
     @Column(name = "PRICE")
     private BigDecimal price;
