@@ -1,6 +1,7 @@
 package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.Product;
+import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.ProductResource;
 import com.acme.eshop.service.LoginService;
 import com.acme.eshop.service.ProductService;
@@ -29,7 +30,6 @@ public class ProductController {
     @ApiOperation("Get all products")
     @GetMapping(value = "/products")
     public ResponseEntity<Page<Product>> getAll(Pageable pageable) {
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productService.getAll(pageable));
     }
@@ -57,11 +57,11 @@ public class ProductController {
                                                                     @PathVariable String categoryName,
                                                                     Pageable pageable) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        if(!loginService.getUser(sessionID).isAdmin()) {
+        if (!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
@@ -72,13 +72,13 @@ public class ProductController {
     @ApiOperation("Create a product")
     @PostMapping(value = "/products/")
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductResource product,
-                                 @RequestHeader("sessionID") UUID sessionID) {
+                                                 @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        if(!loginService.getUser(sessionID).isAdmin()) {
+        if (!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
@@ -92,11 +92,11 @@ public class ProductController {
                                                  @RequestParam String productCode,
                                                  @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null)
+        if (loginService.getUser(sessionID) == null)
             return new ResponseEntity(HttpStatus.NOT_FOUND);
-        if(!loginService.getUser(sessionID).isAdmin())
+        if (!loginService.getUser(sessionID).isAdmin())
             return new ResponseEntity(HttpStatus.FORBIDDEN);
-        if(!productCode.equals(product.getProductCode()))
+        if (!productCode.equals(product.getProductCode()))
             return new ResponseEntity<Product>(HttpStatus.BAD_REQUEST);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -109,11 +109,11 @@ public class ProductController {
     public ResponseEntity deleteProduct(@RequestParam String productCode,
                                         @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
+        if (loginService.getUser(sessionID) == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        if(!loginService.getUser(sessionID).isAdmin()) {
+        if (!loginService.getUser(sessionID).isAdmin()) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
