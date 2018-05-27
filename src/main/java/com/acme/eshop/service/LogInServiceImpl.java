@@ -38,6 +38,8 @@ public class LogInServiceImpl implements LoginService {
     @Transactional
     @Override
     public User logIn(String email, String password) {
+        if (email == null && password == null)
+            throw new WrongCredentialsException("You must give email and password for login");
         User user = userRepository.findByEmailAndPassword(email, password);
         if (user != null) {
             user.setToken(UUID.randomUUID());
@@ -59,8 +61,9 @@ public class LogInServiceImpl implements LoginService {
         } else if (users.size() > 1) {
             log.warn("Token [{}} is not unique", token);
             throw new NotIdenticalUserException("User is not identical");
+        }else {
+            log.warn("Token [{}] is not valid", token);
+            throw new WrongCredentialsException("User haven't login yet");
         }
-        log.warn("Token [{}] is not valid", token);
-        throw new WrongCredentialsException("User haven't login yet");
     }
 }

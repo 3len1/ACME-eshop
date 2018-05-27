@@ -1,6 +1,8 @@
 package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.User;
+import com.acme.eshop.exceptions.NotIdenticalUserException;
+import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,19 +28,28 @@ public class LoginController {
 
     @ApiOperation(value = "Log in")
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> login(@RequestBody Map<String, String> loginParams) {
+    public ResponseEntity login(@RequestBody Map<String, String> loginParams) {
         String email = loginParams.get("email");
         String password = loginParams.get("password");
-
-        if (email == null || password == null)
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         User user = loginService.logIn(email, password);
         return (user != null) ? ResponseEntity.status(HttpStatus.OK).body(user) : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @ApiOperation(value = "Log out")
-    @PostMapping(value = "/logout")
+    @GetMapping(value = "/logout")
     public void logout(@RequestHeader("sessionID") UUID sessionID) {
         loginService.logOut(sessionID);
+    }
+
+    @ExceptionHandler(WrongCredentialsException.class)
+    public ResponseEntity<String> handleCredentialsError() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Given credentials are not correct");
+
+    }
+
+    @ExceptionHandler(NotIdenticalUserException.class)
+    public ResponseEntity<String> handleIdenticalError() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Connection error");
+
     }
 }
