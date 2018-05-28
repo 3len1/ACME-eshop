@@ -74,6 +74,10 @@ public class AdviceController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage("User not found", 404));
     }
 
+    @ExceptionHandler(OrderAlreadyPayed.class)
+    public ResponseEntity<ErrorMessage> handleErrors(OrderAlreadyPayed ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage("Order is already paid or canceled make a new one", 403));
+    }
 
 }
 

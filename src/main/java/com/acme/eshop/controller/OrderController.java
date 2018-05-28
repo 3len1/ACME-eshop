@@ -103,7 +103,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Order can't cancel because is payed");
     }
 
-    @ApiOperation(value = "Delete an Order")
+    @ApiOperation(value = "Admin delete an Order")
     @DeleteMapping(value = "admin/orders/{orderCode}")
     public ResponseEntity<String> deleteOrder(@PathVariable(name = "orderCode") String orderCode,
                                               @RequestHeader("sessionID") UUID sessionID) {

@@ -45,3 +45,10 @@
   "amount": "5",
   "productCode": "P001"
 }
+
+//ORDER JSON
+{
+  "comments": "I have to kill your mother",
+  "orderCode": "Order1",
+  "paymentMethod": "PAYPAL"
+}

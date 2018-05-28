@@ -20,7 +20,6 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component("orderService")
 public class OrderServiceImpl implements OrderService {
@@ -108,18 +107,25 @@ public class OrderServiceImpl implements OrderService {
             log.warn("Order with code [{}] already exist", orderResource.getOrderCode());
             throw new OrderAlreadyExistException("This orderCode is given to another order");
         }
+        User loginUser = userRepository.findById(userId).get();
+        if (loginUser == null) {
+            log.warn("User with id [{}] not found", userId);
+            throw new UserNotFoundException("User not found");
+        }
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
             List<Item> cartsItems = itemRepository.findByCart(cart);
             Order order = orderConverter.getOrder(orderResource);
-            cartsItems.stream().map(item -> {
+            cartsItems.forEach(item -> {
                 item.setOrder(order);
                 item.setCart(null);
                 item.getProduct().increasePurchased(item.getAmount());
                 item.getProduct().minusStockAmount(item.getAmount());
                 productRepository.save(item.getProduct());
-                return itemRepository.save(item);
-            }).collect(Collectors.toList());
-            cartRepository.save(cart);
+                itemRepository.save(item);
+                order.calculatePrice(item.getPrice());
+            });
+            order.setUser(loginUser);
+            order.setCreatedDate(DateUtils.epochNow());
             orderRepository.save(order);
             log.info("User [{}] create order [{}] successfully", userId, orderResource.getOrderCode());
         });
@@ -129,16 +135,23 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public synchronized Order addItemsToOrder(String orderCode, ItemResource addedItem, Long userId) {
+        Order order = showOrder(orderCode, userId);
+        if (order != null && (order.getPaymentDate() != null || order.isCanceled())) {
+            log.warn("User [{}] try to add items to order [{}] which is payed or canceled", userId,
+                    order.getOrderCode());
+            throw new OrderAlreadyPayed("Order is already paid or canceled");
+        }
         Item item = new Item();
         Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);
             item.setAmount((addedItem.getAmount() != null) ? Integer.parseInt(addedItem.getAmount()) : 1);
             item.setPrice(PriceUtils.bigDecimalMultiply(product.getPrice(), item.getAmount()));
             item.setCreatedDate(DateUtils.epochNow());
-            item.setOrder(showOrder(orderCode, userId));
+            item.setOrder(order);
             product.minusStockAmount(item.getAmount());
             product.increasePurchased(item.getAmount());
             productRepository.save(product);
+            order.calculatePrice(item.getPrice());
         });
         if (item.getOrder() != null) {
             itemRepository.save(item);

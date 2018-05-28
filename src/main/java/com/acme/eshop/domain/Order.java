@@ -110,6 +110,12 @@ public class Order extends PersistableEntity implements Serializable {
         this.user = user;
     }
 
+    public BigDecimal calculatePrice(BigDecimal price) {
+        if (this.totalPrice == null) totalPrice = new BigDecimal(0);
+        this.totalPrice = this.totalPrice.add(price);
+        return this.totalPrice;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
