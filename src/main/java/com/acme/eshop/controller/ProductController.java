@@ -84,7 +84,7 @@ public class ProductController {
                 .body(productService.outOfStock());
     }
 
-    @ApiOperation("Admin create product")
+    @ApiOperation(value = "Admin create product", notes = "price is Long that means 1000 is 10 euro")
     @PostMapping(value = "/admin/products")
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductResource product,
                                                  @RequestHeader("sessionID") UUID sessionID) {
@@ -94,7 +94,7 @@ public class ProductController {
                 .body(productService.createProduct(product));
     }
 
-    @ApiOperation("Admin update product")
+    @ApiOperation(value = "Admin update product", notes = "price is Long that means 1000 is 10 euro")
     @PutMapping(value = "/admin/products/{productCode}")
     public ResponseEntity<Product> updateProduct(@PathVariable(name = "productCode") String code,
                                                  @Valid @RequestBody ProductResource product,

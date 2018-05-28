@@ -5,7 +5,6 @@ import com.acme.eshop.utils.DateConverter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
@@ -40,12 +39,9 @@ public class Order extends PersistableEntity implements Serializable {
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
 
-    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Item> items;
 
     public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice,
-                 String comments, boolean canceled, User user, List<Item> items) {
+                 String comments, boolean canceled, User user) {
         this.orderCode = orderCode;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
@@ -53,7 +49,6 @@ public class Order extends PersistableEntity implements Serializable {
         this.comments = comments;
         this.canceled = canceled;
         this.user = user;
-        this.items = items;
     }
 
     public Order() {
@@ -113,14 +108,6 @@ public class Order extends PersistableEntity implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
     }
 
     @Override

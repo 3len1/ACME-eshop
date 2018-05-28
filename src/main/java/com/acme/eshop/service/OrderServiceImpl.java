@@ -111,14 +111,14 @@ public class OrderServiceImpl implements OrderService {
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
             List<Item> cartsItems = itemRepository.findByCart(cart);
             Order order = orderConverter.getOrder(orderResource);
-            order.setItems(cartsItems.stream().map(item -> {
+            cartsItems.stream().map(item -> {
                 item.setOrder(order);
                 item.setCart(null);
                 item.getProduct().increasePurchased(item.getAmount());
                 item.getProduct().minusStockAmount(item.getAmount());
                 productRepository.save(item.getProduct());
                 return itemRepository.save(item);
-            }).collect(Collectors.toList()));
+            }).collect(Collectors.toList());
             cartRepository.save(cart);
             orderRepository.save(order);
             log.info("User [{}] create order [{}] successfully", userId, orderResource.getOrderCode());

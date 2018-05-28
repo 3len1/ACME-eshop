@@ -14,8 +14,8 @@ public interface CartService {
 
     Cart getCartByUser(Long userId);
     Cart addItemToCart(ItemResource addedItem, Long userId);
-    Cart removeItemFromCart(String productCode, Long userId);
-    void emptyCart(Long userId);
+    List<Item> removeItemFromCart(String productCode, Long userId);
     List<Item> getAllItemsFromCart(Long userId);
+    void emptyCart(Long userId);
 
 }

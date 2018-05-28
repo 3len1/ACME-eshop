@@ -62,9 +62,9 @@ public class CartController {
 
     @ApiOperation("User remove product form cart")
     @DeleteMapping(value = "/{userId}/cart")
-    public ResponseEntity<Cart> removeItemFromCart(@PathVariable(name = "userId") Long userId,
-                                                   @NotNull @RequestBody String productCode,
-                                                   @RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<List<Item>> removeItemFromCart(@PathVariable(name = "userId") Long userId,
+                                                         @NotNull @RequestBody String productCode,
+                                                         @RequestHeader("sessionID") UUID sessionID) {
         User loginUser = loginService.getUser(sessionID);
         if (!userId.equals(loginUser.getId())) {
             log.warn("Login user [{}] has not access to see users [{}] cart", loginUser.getId(), userId);

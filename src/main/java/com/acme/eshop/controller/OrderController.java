@@ -3,6 +3,7 @@ package com.acme.eshop.controller;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.exceptions.UserNotFoundException;
+import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
 import com.acme.eshop.service.LoginService;
@@ -29,30 +30,19 @@ public class OrderController {
     @Autowired
     private LoginService loginService;
 
-    @ApiOperation(value = "Get all orders")
+    @ApiOperation(value = "Get orders", notes = "Simple user see only his own orders, admin see all orders")
     @GetMapping(value = "/orders")
     public ResponseEntity<Page<Order>> getAllOrder(@RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
-
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
         return ResponseEntity.ok()
                 .body(orderService.getAllOrder(loginService.getUser(sessionID).getId(), pageable));
     }
 
-    @ApiOperation(value = "Get orders by user")
+    @ApiOperation(value = "Get orders by user", notes = "Admin can check specific user orders")
     @GetMapping(value = "/{userId}/orders")
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable Long userId,
                                                     @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
-
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
         if (!loginService.getUser(sessionID).isAdmin())
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-
+            throw new WrongCredentialsException("Only admin can see other user orders");
         return ResponseEntity.ok()
                 .body(orderService.getAllByUser(userId, pageable));
     }
@@ -61,11 +51,8 @@ public class OrderController {
     @GetMapping(value = "/orders/{orderCode}")
     public ResponseEntity<Order> getOrder(@PathVariable String orderCode,
                                           @RequestHeader("sessionID") UUID sessionID) {
-
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
+        if (loginService.getUser(sessionID) == null)
+            throw new WrongCredentialsException("Only login user can see order");
         return ResponseEntity.ok()
                 .body(orderService.showOrder(orderCode, loginService.getUser(sessionID).getId()));
     }
@@ -74,10 +61,8 @@ public class OrderController {
     @GetMapping(value = "/{orderCode}/items")
     public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable String orderCode,
                                                            @RequestHeader("sessionID") UUID sessionID) {
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
+        if (loginService.getUser(sessionID) == null)
+            throw new WrongCredentialsException("Only login user can see order");
         return ResponseEntity.ok()
                 .body(orderService.getAllItemsFromOrder(orderCode, loginService.getUser(sessionID).getId()));
     }

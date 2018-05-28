@@ -60,7 +60,7 @@ public class CartServiceImpl implements CartService {
             item.setCart(userCart);
             item.setOrder(null);
             log.info("Product [{}] added [{}] times to user's [{}] cart", product.getProductCode(), item.getAmount(), userId);
-            itemRepository.save(item);
+            itemRepository.saveAndFlush(item);
         });
         if (item.getCart() != null)
             return userCart;
@@ -71,15 +71,17 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public Cart removeItemFromCart(String productCode, Long userId) {
+    public List<Item> removeItemFromCart(String productCode, Long userId) {
         Cart cart = getCartByUser(userId);
+        final Boolean[] productExist = {false};
         Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product -> {
             if (cart != null) {
                 itemRepository.deleteAllByProductAndCart(product, cart);
                 log.info("Product [{}] successfully removed from users [{}] cart", productCode, userId);
+                productExist[0] =true;
             }
         });
-        if (cart != null) return cart;
+        if (productExist[0]) return itemRepository.findByCart(cart);
         log.warn("Product with code [{}] does not exist", productCode);
         throw new ProductNotFoundException("Product not found");
     }
