@@ -2,7 +2,7 @@ package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
-import com.acme.eshop.exceptions.UserNotFoundException;
+import com.acme.eshop.domain.User;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
@@ -33,73 +33,96 @@ public class OrderController {
     @ApiOperation(value = "Get orders", notes = "Simple user see only his own orders, admin see all orders")
     @GetMapping(value = "/orders")
     public ResponseEntity<Page<Order>> getAllOrder(@RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(orderService.getAllOrder(loginService.getUser(sessionID).getId(), pageable));
     }
 
     @ApiOperation(value = "Get orders by user", notes = "Admin can check specific user orders")
     @GetMapping(value = "/{userId}/orders")
-    public ResponseEntity<Page<Order>> getAllByUser(@PathVariable Long userId,
+    public ResponseEntity<Page<Order>> getAllByUser(@PathVariable(name = "userId") Long userId,
                                                     @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
         if (!loginService.getUser(sessionID).isAdmin())
             throw new WrongCredentialsException("Only admin can see other user orders");
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(orderService.getAllByUser(userId, pageable));
     }
 
     @ApiOperation(value = "Get single order")
     @GetMapping(value = "/orders/{orderCode}")
-    public ResponseEntity<Order> getOrder(@PathVariable String orderCode,
+    public ResponseEntity<Order> getOrder(@PathVariable(name = "orderCode") String orderCode,
                                           @RequestHeader("sessionID") UUID sessionID) {
-        if (loginService.getUser(sessionID) == null)
+        User user = loginService.getUser(sessionID);
+        if (user == null)
             throw new WrongCredentialsException("Only login user can see order");
-        return ResponseEntity.ok()
-                .body(orderService.showOrder(orderCode, loginService.getUser(sessionID).getId()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(orderService.showOrder(orderCode, user.getId()));
     }
 
     @ApiOperation(value = "Get all items from order")
-    @GetMapping(value = "/{orderCode}/items")
-    public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable String orderCode,
+    @GetMapping(value = "/orders/{orderCode}/items")
+    public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable(name = "orderCode") String orderCode,
                                                            @RequestHeader("sessionID") UUID sessionID) {
-        if (loginService.getUser(sessionID) == null)
-            throw new WrongCredentialsException("Only login user can see order");
-        return ResponseEntity.ok()
-                .body(orderService.getAllItemsFromOrder(orderCode, loginService.getUser(sessionID).getId()));
+        User user = loginService.getUser(sessionID);
+        if (user == null)
+            throw new WrongCredentialsException("Only login user can see items from order");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(orderService.getAllItemsFromOrder(orderCode, user.getId()));
     }
 
     @ApiOperation(value = "Create an Order")
     @PostMapping(value = "/orders")
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderResource order, @RequestHeader("sessionID") UUID sessionID) {
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
+        User user = loginService.getUser(sessionID);
+        if (user == null)
+            throw new WrongCredentialsException("Only login user can create order");
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderService.createOrder(order, loginService.getUser(sessionID).getId()));
+                .body(orderService.createOrder(order, user.getId()));
+    }
 
+
+    @ApiOperation(value = "Pay an order")
+    @PutMapping(value = "/orders/{orderCode}")
+    public ResponseEntity<Order> payOrder(@PathVariable(name = "orderCode") String orderCode,
+                                          @RequestHeader("sessionID") UUID sessionID) {
+        User user = loginService.getUser(sessionID);
+        if (user == null)
+            throw new WrongCredentialsException("Only login user can pay order");
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(orderService.payOrder(orderCode, user.getId()));
+    }
+
+    @ApiOperation(value = "Cancel and order")
+    @PutMapping(value = "/orders/{orderCode}/cancel")
+    public ResponseEntity<String> cancelOrder(@PathVariable(name = "orderCode") String orderCode,
+                                              @RequestHeader("sessionID") UUID sessionID) {
+        User user = loginService.getUser(sessionID);
+        if (user == null)
+            throw new WrongCredentialsException("Only login user can cancel order");
+        if (orderService.cancelOrder(orderCode, user.getId()))
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Order canceled");
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Order can't cancel because is payed");
     }
 
     @ApiOperation(value = "Delete an Order")
-    @DeleteMapping(value = "/orders/{orderCode}")
-    public ResponseEntity deleteOrder(@RequestHeader("sessionID") UUID sessionID, @PathVariable String orderCode) {
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
+    @DeleteMapping(value = "admin/orders/{orderCode}")
+    public ResponseEntity<String> deleteOrder(@PathVariable(name = "orderCode") String orderCode,
+                                              @RequestHeader("sessionID") UUID sessionID) {
+        if (!loginService.getUser(sessionID).isAdmin())
+            throw new WrongCredentialsException("Only admin can delete an order");
         orderService.deleteOrder(orderCode, loginService.getUser(sessionID).getId());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Order deleted");
     }
 
     @ApiOperation(value = "Remove an item from order")
     @DeleteMapping(value = "/orders/{orderCode}/items/{productCode}")
-    public ResponseEntity removeItemFromOrder(@PathVariable String orderCode,
-                                              @PathVariable String productCode,
-                                              @RequestHeader("sessionID") UUID sessionID) {
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-        orderService.removeItemFromOrder(orderCode, productCode, loginService.getUser(sessionID).getId());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<Order> removeItemFromOrder(@PathVariable(name = "orderCode") String orderCode,
+                                                     @PathVariable(name = "productCode") String productCode,
+                                                     @RequestHeader("sessionID") UUID sessionID) {
+        User user = loginService.getUser(sessionID);
+        if (user == null)
+            throw new WrongCredentialsException("Only login user can remove items from order");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(orderService.removeItemFromOrder(orderCode, productCode, user.getId()));
 
     }
 
@@ -108,42 +131,12 @@ public class OrderController {
     public ResponseEntity<Order> addItemsToOrder(@Valid @RequestBody ItemResource item,
                                                  @PathVariable String orderCode,
                                                  @RequestHeader("sessionID") UUID sessionID) {
-
+        User user = loginService.getUser(sessionID);
+        if (user == null)
+            throw new WrongCredentialsException("Only login user can remove items from order");
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderService.addItemsToOrder(orderCode, item, loginService.getUser(sessionID).getId()));
+                .body(orderService.addItemsToOrder(orderCode, item, user.getId()));
 
     }
 
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleError() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-
-    }
-
-    @ApiOperation(value = "Pay the order")
-    @PutMapping(value = "/orders/{orderCode}")
-    public ResponseEntity<Order> payOrder(@PathVariable String orderCode,
-                                          @RequestHeader("sessionID") UUID sessionID) {
-
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(orderService.payOrder(orderCode, loginService.getUser(sessionID).getId()));
-    }
-
-    @ApiOperation(value = "Cancel order")
-    @PutMapping(value = "/orders/{orderCode}/cancel")
-    public ResponseEntity calncelOrder(@PathVariable String orderCode,
-                                       @RequestHeader("sessionID") UUID sessionID) {
-
-        if (loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(orderService.cancelOrder(orderCode, loginService.getUser(sessionID).getId()));
-    }
 }

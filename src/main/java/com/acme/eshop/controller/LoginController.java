@@ -36,8 +36,9 @@ public class LoginController {
 
     @ApiOperation(value = "Log out")
     @GetMapping(value = "/logout")
-    public void logout(@RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<String> logout(@RequestHeader("sessionID") UUID sessionID) {
         loginService.logOut(sessionID);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bye bye");
     }
 
     @ExceptionHandler(WrongCredentialsException.class)

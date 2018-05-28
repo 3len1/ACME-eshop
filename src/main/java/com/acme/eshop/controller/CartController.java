@@ -84,7 +84,7 @@ public class CartController {
             throw new WrongCredentialsException("Only owner can empty his cart");
         }
         cartService.emptyCart(userId);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

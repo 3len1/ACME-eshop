@@ -111,13 +111,13 @@ public class ProductController {
 
     @ApiOperation("Admin delete product")
     @DeleteMapping(value = "/admin/products/{productCode}")
-    public ResponseEntity deleteProduct(@PathVariable(name = "productCode") String code,
-                                        @RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<String> deleteProduct(@PathVariable(name = "productCode") String code,
+                                                @RequestHeader("sessionID") UUID sessionID) {
 
         if (!loginService.getUser(sessionID).isAdmin())
             throw new WrongCredentialsException("Only admin can delete products");
         productService.deleteProduct(code);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product deleted");
     }
 
 }

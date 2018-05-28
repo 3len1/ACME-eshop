@@ -101,12 +101,12 @@ public class UserController {
 
     @ApiOperation("Admin delete user")
     @DeleteMapping(value = "/admin/users/{userId}")
-    public ResponseEntity deleteUser(@PathVariable(name = "userId") Long userId,
-                                     @RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<String> deleteUser(@PathVariable(name = "userId") Long userId,
+                                             @RequestHeader("sessionID") UUID sessionID) {
         boolean isAdmin = loginService.getUser(sessionID).isAdmin();
         if (!isAdmin)
             throw new WrongCredentialsException("Only admin can delete accounts");
         userService.adminDeleteUser(userId, isAdmin);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted");
     }
 }
