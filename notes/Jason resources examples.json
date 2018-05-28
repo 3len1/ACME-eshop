@@ -1,10 +1,17 @@
-ADMIN LOGIN
+//ADMIN LOGIN
 {
-	"email": "vamphelp1@yahoo.com",
-	"password": "vamphelp1"
+  "email": "vamphelp1@yahoo.com",
+  "password": "vamphelp1"
 }
 
-USER JSON 
+
+//USER LOGIN
+{
+  "email": "vamphelp2@yahoo.com",
+  "password": "vamphelp2"
+}
+
+//USER JSON
 {
   "address": {
     "postalCode": "12351",
@@ -20,8 +27,21 @@ USER JSON
   "phone": "2105753088",
   "type": "ADMIN"
 }
-ADMIN LOGIN
+
+//PRODUCT JSON
 {
-	"email": "geo@in.gr",
-	"password": "123qwe"
+  "categoryName": "Pistols",
+  "description": "Loaded gun",
+  "imgUrl": "/img/products/P004",
+  "price": 0,
+  "productCode": "P004",
+  "purchased": "12",
+  "stock": "0"
+}
+
+
+//ITEM JSON
+{
+  "amount": "5",
+  "productCode": "P001"
 }

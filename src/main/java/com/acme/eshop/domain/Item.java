@@ -23,11 +23,11 @@ public class Item extends PersistableEntity implements Serializable {
     private Product product;
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORDER_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "ORDER_ID", referencedColumnName = "ID", nullable = true)
     private Order order;
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CART_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "CART_ID", referencedColumnName = "ID", nullable = true)
     private Cart cart;
 
     public Item(BigDecimal price, Integer amount, Product product, Order order, Cart cart) {

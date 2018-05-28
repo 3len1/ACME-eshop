@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByUser(Long userId) {
-        User user = userRepository.findById(userId).orElseGet(null);
+        User user = userRepository.findById(userId).get();
         if (user == null) {
             log.warn("User [{}] not exist", userId);
             throw new UserNotFoundException("User not found");
@@ -51,17 +51,19 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart addItemToCart(ItemResource addedItem, Long userId) {
         Item item = new Item();
+        Cart userCart = getCartByUser(userId);
         Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);
             item.setAmount((addedItem.getAmount() != null) ? Integer.parseInt(addedItem.getAmount()) : 1);
             item.setPrice(PriceUtils.bigDecimalMultiply(product.getPrice(), item.getAmount()));
             item.setCreatedDate(DateUtils.epochNow());
-            item.setCart(getCartByUser(userId));
+            item.setCart(userCart);
+            item.setOrder(null);
             log.info("Product [{}] added [{}] times to user's [{}] cart", product.getProductCode(), item.getAmount(), userId);
             itemRepository.save(item);
         });
         if (item.getCart() != null)
-            return cartRepository.save(item.getCart());
+            return userCart;
 
         log.warn("Product with code [{}] does not exist", addedItem.getProductCode());
         throw new ProductNotFoundException("Product not found");
