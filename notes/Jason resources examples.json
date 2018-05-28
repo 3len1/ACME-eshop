@@ -1,0 +1,27 @@
+ADMIN LOGIN
+{
+	"email": "vamphelp1@yahoo.com",
+	"password": "vamphelp1"
+}
+
+USER JSON 
+{
+  "address": {
+    "postalCode": "12351",
+    "street": "Plati P 32",
+    "town": "Agia Varvara"
+  },
+  "birthday": "2018-05-28T09:34:50.209Z",
+  "email": "geo@in.gr",
+  "firstName": "Giwrgos",
+  "gender": "MALE",
+  "lastName": "Papadimas",
+  "password": "123qwe",
+  "phone": "2105753088",
+  "type": "ADMIN"
+}
+ADMIN LOGIN
+{
+	"email": "geo@in.gr",
+	"password": "123qwe"
+}
