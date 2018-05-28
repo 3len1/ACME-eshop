@@ -26,7 +26,7 @@ public class ProductConverter {
             product.setPurchased(0);
             product.setCategory(category);
             return product;
-        }).getOrElseGet(null);
+        }).get();
     }
 
 }

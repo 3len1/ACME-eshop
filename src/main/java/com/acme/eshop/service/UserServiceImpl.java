@@ -1,12 +1,10 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.converter.UserConverter;
+import com.acme.eshop.domain.Address;
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.exceptions.ResourceNotValid;
-import com.acme.eshop.exceptions.UserAlreadyExistException;
-import com.acme.eshop.exceptions.UserNotFoundException;
-import com.acme.eshop.exceptions.WrongCredentialsException;
+import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.repository.AddressRepository;
 import com.acme.eshop.repository.CartRepository;
@@ -61,12 +59,16 @@ public class UserServiceImpl implements UserService {
         if (retrieveUser != null) {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
             retrieveUser.setAdmin(false);
+            Address address = addressService.createUserAddress(user.getAddress(), retrieveUser.getId());
+            retrieveUser = userRepository.save(retrieveUser);
             Cart cart = new Cart();
+            cart.setCreatedDate(DateUtils.epochNow());
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
-            addressService.createUserAddress(user.getAddress(), retrieveUser);
+            address.setUserId(retrieveUser.getId());
+            addressRepository.save(address);
             log.info("User [{}] created", user.getEmail());
-            return userRepository.save(retrieveUser);
+            return retrieveUser;
         }
         throw new ResourceNotValid("User resource is not valid, try again");
     }
@@ -75,15 +77,20 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User updateAccount(UserResource user, Long userId) {
-        if (!userRepository.findById(userId).isPresent()) {
-            log.warn("User [{}] doesn't exist", userId);
-            throw new UserNotFoundException("User does not exist");
+        User result = userRepository.findByEmail(user.getEmail());
+        if (!userRepository.findById(userId).isPresent() && result == null) {
+            log.warn("User [{}] doesn't exist", user.getEmail());
+            throw new UserNotFoundException("This user does not exist");
+        }
+        if (!user.getEmail().equals(result.getEmail())) {
+            log.warn("User [{}] and email [{}] does not much", userId, user.getEmail());
+            throw new WrongCredentialsException("User can update only his own profile");
         }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setEmail(userRepository.findById(userId).get().getEmail());
             retrieveUser.setAdmin(false);
-            addressService.updateUserAddress(userRepository.findByEmail(user.getEmail()).getId(), user.getAddress());
+            addressService.updateUserAddress(user.getAddress(), userId);
             log.info("User account[{}] update", retrieveUser.getEmail());
             return userRepository.save(retrieveUser);
         }
@@ -105,7 +112,7 @@ public class UserServiceImpl implements UserService {
             Cart cart = new Cart();
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
-            addressService.createUserAddress(user.getAddress(), retrieveUser);
+            addressService.createUserAddress(user.getAddress(), retrieveUser.getId());
             log.info("Admin create create [{}]", user.getEmail());
             return userRepository.save(retrieveUser);
         }
@@ -115,15 +122,21 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User adminUpdateUser(UserResource user, boolean isAdmin) {
+    public User adminUpdateUser(UserResource user, boolean isAdmin, Long userId) {
         if (!isAdmin) throw new WrongCredentialsException("You are not aloud to make other accounts");
-        if (userRepository.findByEmail(user.getEmail()) == null) {
+        User result = userRepository.findByEmail(user.getEmail());
+        if (!userRepository.findById(userId).isPresent() && result == null) {
             log.warn("User [{}] doesn't exist", user.getEmail());
             throw new UserNotFoundException("This user does not exist");
         }
+        if (!user.getEmail().equals(result.getEmail())) {
+            log.warn("User [{}] and email [{}] does not much", userId, user.getEmail());
+            throw new NotIdenticalUserException("Given email does not reference to given profile ");
+        }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
-            addressService.updateUserAddress(userRepository.findByEmail(user.getEmail()).getId(), user.getAddress());
+            retrieveUser.setId(userId);
+            addressService.updateUserAddress(user.getAddress(), userId);
             log.info("Admin update user [{}]", retrieveUser.getEmail());
             return userRepository.save(retrieveUser);
 

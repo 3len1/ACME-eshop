@@ -19,6 +19,6 @@ public class OrderConverter {
             order.setComments(orderResource.getComments());
             order.setPaymentMethod(PaymentType.fromString(orderResource.getPaymentMethod()));
             return order;
-        }).getOrElseGet(null);
+        }).get();
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public interface AddressService {
 
     Address getUserAddress(Long userId);
-    Address updateUserAddress(Long userId, AddressResource addressResource);
-    Address createUserAddress(AddressResource addressResource, User user);
+    Address updateUserAddress(AddressResource addressResource, Long UserId);
+    Address createUserAddress(AddressResource addressResource, Long userId);
 
 }

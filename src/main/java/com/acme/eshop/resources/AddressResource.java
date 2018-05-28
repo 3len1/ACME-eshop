@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 public class AddressResource {
 
     private static final String POSTAL_CODE_PATTERN = "\\d\\d\\d\\d\\d";
-    private static final String TOWN_PATTERN = "^[A-z]+$";
+    private static final String TOWN_PATTERN = "^[A-z ]*$";
     private static final String STREET_PATTERN = "^[a-zA-Z0-9 ,]*$";
     private static final int POSTAL_CODE_SIZE = 5;
 
@@ -30,6 +30,6 @@ public class AddressResource {
     @Pattern(regexp = TOWN_PATTERN, message = "{address.town.invalid}")
     private String town;
 
-    @Pattern(regexp = POSTAL_CODE_PATTERN, message = "{address.street.invalid}")
+    @Pattern(regexp = STREET_PATTERN, message = "{address.street.invalid}")
     private String street;
 }

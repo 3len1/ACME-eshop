@@ -33,20 +33,17 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address getUserAddress(Long userId) {
-        User user = userRepository.findById(userId).orElseGet(null);
+        User user = userRepository.findById(userId).get();
         if (user == null) {
             log.warn("User [{}] not exist", userId);
             throw new UserNotFoundException("User not found");
         }
-        List<Address> addresses = addressRepository.findByUserId(user.getId());
-        if (addresses.size() > 1) throw new NotIdenticalAddressForUser("User have more than one addresses");
-        if (addresses.isEmpty()) throw new NotIdenticalAddressForUser("User does not have an address");
-        return addresses.get(0);
+        return user.getAddress();
     }
 
     @Transactional
     @Override
-    public Address updateUserAddress(Long userId, AddressResource addressResource) {
+    public Address updateUserAddress(AddressResource addressResource, Long userId) {
         User user = userRepository.findById(userId).orElseGet(null);
         if (user == null) {
             log.warn("User [{}] does not exist", userId);
@@ -66,15 +63,14 @@ public class AddressServiceImpl implements AddressService {
 
     @Transactional
     @Override
-    public Address createUserAddress(AddressResource addressResource, User user) {
+    public Address createUserAddress(AddressResource addressResource, Long userId) {
         Address address = addressConverter.getAddress(addressResource);
         if (address == null) {
-            log.warn("Address for user [{}] can't be updated", user.getId());
+            log.warn("Address for user [{}] can't be updated", userId);
             throw new ResourceNotValid("Address is not valid");
         }
         address.setCreatedDate(DateUtils.epochNow());
-        address.setUserId(user.getId());
-        log.info("Address for user [{}] created", user.getId());
+        log.info("Address for user [{}] created", userId);
         return addressRepository.save(address);
     }
 }
