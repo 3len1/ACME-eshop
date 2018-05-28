@@ -2,7 +2,6 @@ package com.acme.eshop.service;
 
 import com.acme.eshop.domain.User;
 import com.acme.eshop.exceptions.NotIdenticalUserException;
-import com.acme.eshop.exceptions.UserNotFoundException;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.repository.UserRepository;
 import org.slf4j.Logger;

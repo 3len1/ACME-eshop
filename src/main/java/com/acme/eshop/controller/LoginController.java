@@ -1,19 +1,16 @@
 package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.User;
-import com.acme.eshop.exceptions.NotIdenticalUserException;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.ErrorMessage;
 import com.acme.eshop.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.UUID;

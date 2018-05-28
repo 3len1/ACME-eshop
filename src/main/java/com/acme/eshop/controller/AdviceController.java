@@ -4,9 +4,7 @@ import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 

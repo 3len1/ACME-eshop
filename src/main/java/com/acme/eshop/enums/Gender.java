@@ -12,7 +12,6 @@ public enum Gender {
         if (genderString == null)
             return null;
 
-        Gender gender;
         genderString = genderString.toUpperCase();
         switch (genderString) {
             case "MALE":

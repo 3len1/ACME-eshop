@@ -2,7 +2,6 @@ package com.acme.eshop.service;
 
 import com.acme.eshop.domain.ProductCategory;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

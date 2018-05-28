@@ -4,7 +4,6 @@ import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.Item;
 import com.acme.eshop.resources.ItemResource;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**

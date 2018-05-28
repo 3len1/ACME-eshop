@@ -1,7 +1,6 @@
 package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.User;
-import com.acme.eshop.exceptions.ResourceNotValid;
 import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.enums.Gender;
 import javaslang.control.Try;

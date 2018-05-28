@@ -2,7 +2,6 @@ package com.acme.eshop.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.

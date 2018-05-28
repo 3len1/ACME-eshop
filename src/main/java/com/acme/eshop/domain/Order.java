@@ -2,7 +2,6 @@ package com.acme.eshop.domain;
 
 import com.acme.eshop.enums.PaymentType;
 import com.acme.eshop.utils.DateConverter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;

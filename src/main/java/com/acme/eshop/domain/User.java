@@ -3,7 +3,6 @@ package com.acme.eshop.domain;
 
 import com.acme.eshop.enums.Gender;
 import com.acme.eshop.utils.DateConverter;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;

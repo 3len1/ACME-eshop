@@ -3,7 +3,6 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.AddressConverter;
 import com.acme.eshop.domain.Address;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.exceptions.NotIdenticalAddressForUser;
 import com.acme.eshop.exceptions.ResourceNotValid;
 import com.acme.eshop.exceptions.UserNotFoundException;
 import com.acme.eshop.resources.AddressResource;
@@ -14,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 
