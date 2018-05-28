@@ -33,7 +33,8 @@ public class UserController {
 
     @ApiOperation("Profile")
     @GetMapping(value = "/users/{userId}")
-    public ResponseEntity<User> showProfile(@PathVariable(name = "productCode") Long userId) {
+    public ResponseEntity<User> showProfile(@PathVariable(name = "userId") Long userId,
+                                            @RequestHeader("sessionId") UUID sessionId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.showUser(userId));
     }
@@ -101,7 +102,7 @@ public class UserController {
 
     @ApiOperation("Admin delete user")
     @DeleteMapping(value = "/admin/users/{userId}")
-    public ResponseEntity deleteUser(@PathVariable(name = "productCode") Long userId,
+    public ResponseEntity deleteUser(@PathVariable(name = "userId") Long userId,
                                      @RequestHeader("sessionID") UUID sessionID) {
         boolean isAdmin = loginService.getUser(sessionID).isAdmin();
         if (!isAdmin)

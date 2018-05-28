@@ -46,7 +46,7 @@ public class User extends PersistableEntity implements Serializable {
     private Long birthday;
 
     @Column(name = "IS_ADMIN")
-    private boolean isAdmin;
+    private Boolean isAdmin;
 
 
     @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY)
@@ -56,7 +56,7 @@ public class User extends PersistableEntity implements Serializable {
 
     public User(String email, String password, UUID token, String lastName, String firstName,
                 Gender gender, @Size(max = 10) String phone, Long birthday,
-                boolean isAdmin, Address address) {
+                Boolean isAdmin, Address address) {
         this.email = email;
         this.password = password;
         this.token = token;
@@ -136,11 +136,11 @@ public class User extends PersistableEntity implements Serializable {
         this.birthday = birthday;
     }
 
-    public boolean isAdmin() {
+    public Boolean isAdmin() {
         return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(Boolean admin) {
         isAdmin = admin;
     }
 

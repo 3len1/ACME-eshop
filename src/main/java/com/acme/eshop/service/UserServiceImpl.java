@@ -60,13 +60,12 @@ public class UserServiceImpl implements UserService {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
             retrieveUser.setAdmin(false);
             Address address = addressService.createUserAddress(user.getAddress(), retrieveUser.getId());
+            retrieveUser.setAddress(address);
             retrieveUser = userRepository.save(retrieveUser);
             Cart cart = new Cart();
             cart.setCreatedDate(DateUtils.epochNow());
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
-            address.setUserId(retrieveUser.getId());
-            addressRepository.save(address);
             log.info("User [{}] created", user.getEmail());
             return retrieveUser;
         }
@@ -88,11 +87,14 @@ public class UserServiceImpl implements UserService {
         }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
-            retrieveUser.setEmail(userRepository.findById(userId).get().getEmail());
-            retrieveUser.setAdmin(false);
-            addressService.updateUserAddress(user.getAddress(), userId);
+            retrieveUser.setId(result.getId());
+            retrieveUser.setEmail(result.getEmail());
+            retrieveUser.setAdmin(result.isAdmin());
+            Address address = addressService.updateUserAddress(user.getAddress(), retrieveUser.getId());
+            retrieveUser.setAddress(address);
+            retrieveUser = userRepository.save(retrieveUser);
             log.info("User account[{}] update", retrieveUser.getEmail());
-            return userRepository.save(retrieveUser);
+            return retrieveUser;
         }
         throw new ResourceNotValid("User resource is not valid, try again");
     }
@@ -109,12 +111,14 @@ public class UserServiceImpl implements UserService {
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
             retrieveUser.setCreatedDate(DateUtils.epochNow());
+            Address address = addressService.createUserAddress(user.getAddress(), retrieveUser.getId());
+            retrieveUser.setAddress(address);
+            retrieveUser = userRepository.save(retrieveUser);
             Cart cart = new Cart();
             cart.setUser(retrieveUser);
             cartRepository.save(cart);
-            addressService.createUserAddress(user.getAddress(), retrieveUser.getId());
             log.info("Admin create create [{}]", user.getEmail());
-            return userRepository.save(retrieveUser);
+            return retrieveUser;
         }
         throw new ResourceNotValid("User resource is not valid, try again");
     }
@@ -135,11 +139,13 @@ public class UserServiceImpl implements UserService {
         }
         User retrieveUser = userConverter.getUser(user);
         if (retrieveUser != null) {
-            retrieveUser.setId(userId);
-            addressService.updateUserAddress(user.getAddress(), userId);
+            retrieveUser.setId(result.getId());
+            retrieveUser.setEmail(result.getEmail());
+            Address address = addressService.updateUserAddress(user.getAddress(), retrieveUser.getId());
+            retrieveUser.setAddress(address);
+            retrieveUser = userRepository.save(retrieveUser);
             log.info("Admin update user [{}]", retrieveUser.getEmail());
-            return userRepository.save(retrieveUser);
-
+            return retrieveUser;
         }
         throw new ResourceNotValid("User resource is not valid, try again");
     }
@@ -150,7 +156,6 @@ public class UserServiceImpl implements UserService {
     public void adminDeleteUser(Long userId, boolean isAdmin) {
         userRepository.findById(userId).ifPresent(user -> {
             if (isAdmin) {
-                //TODO Check is items are still
                 orderRepository.deleteAllByUser(user);
                 cartRepository.deleteAllByUser(user);
                 addressRepository.delete(user.getAddress());

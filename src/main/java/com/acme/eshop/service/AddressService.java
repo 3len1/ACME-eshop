@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AddressService {
 
-    Address getUserAddress(Long userId);
     Address updateUserAddress(AddressResource addressResource, Long UserId);
     Address createUserAddress(AddressResource addressResource, Long userId);
 

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Component("addressService")
@@ -31,15 +32,6 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     AddressConverter addressConverter;
 
-    @Override
-    public Address getUserAddress(Long userId) {
-        User user = userRepository.findById(userId).get();
-        if (user == null) {
-            log.warn("User [{}] not exist", userId);
-            throw new UserNotFoundException("User not found");
-        }
-        return user.getAddress();
-    }
 
     @Transactional
     @Override
@@ -49,13 +41,15 @@ public class AddressServiceImpl implements AddressService {
             log.warn("User [{}] does not exist", userId);
             throw new UserNotFoundException("User not found");
         }
-        Address oldAddresses = this.getUserAddress(userId);
+        Address oldAddresses = user.getAddress();
         Address address = addressConverter.getAddress(addressResource);
         if (address == null) {
             log.warn("Address for user [{}] can't be updated", userId);
             throw new ResourceNotValid("Address is not valid");
         } else {
-            address.setId(oldAddresses.getId());
+            Optional.ofNullable(address.getPostalCode()).ifPresent(oldAddresses::setPostalCode);
+            Optional.ofNullable(address.getStreet()).ifPresent(oldAddresses::setStreet);
+            Optional.ofNullable(address.getTown()).ifPresent(oldAddresses::setTown);
             log.info("Address for user [{}] updated", userId);
         }
         return addressRepository.save(address);

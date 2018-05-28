@@ -22,14 +22,10 @@ public class Address extends PersistableEntity implements Serializable {
     @Column(name = "STREET", length = 60)
     private String street;
 
-    @Column(name = "USER_ID")
-    private Long userId;
-
-    public Address(@Size(max = 5) String postalCode, String town, String street, Long userId) {
+    public Address(@Size(max = 5) String postalCode, String town, String street) {
         this.postalCode = postalCode;
         this.town = town;
         this.street = street;
-        this.userId = userId;
     }
 
     public Address() {
@@ -59,11 +55,4 @@ public class Address extends PersistableEntity implements Serializable {
         this.street = street;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }
