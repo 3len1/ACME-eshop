@@ -1,6 +1,7 @@
 package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.User;
+import com.acme.eshop.exceptions.ResourceNotValid;
 import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.enums.Gender;
 import javaslang.control.Try;
@@ -34,6 +35,6 @@ public class UserConverter {
             user.setAddress(addressConverter.getAddress(userResource.getAddress()));
             user.setBirthday(userResource.getBirthday().toEpochMilli());
             return user;
-        }).get();
+        }).getOrElseThrow(()-> new ResourceNotValid("User resource is not valid"));
     }
 }

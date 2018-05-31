@@ -23,7 +23,7 @@ public class AddressResource {
 
 
     @Pattern(regexp = POSTAL_CODE_PATTERN, message = "{address.code.invalid}")
-    @Size(min = POSTAL_CODE_SIZE, max = POSTAL_CODE_SIZE, message = "{address.code.size}")
+    @Size(min = POSTAL_CODE_SIZE, max = POSTAL_CODE_SIZE, message = "{address.code.invalid}")
     private String postalCode;
 
     @Pattern(regexp = TOWN_PATTERN, message = "{address.town.invalid}")

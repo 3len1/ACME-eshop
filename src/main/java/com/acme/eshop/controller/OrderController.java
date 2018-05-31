@@ -38,7 +38,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "Get orders by user", notes = "Admin can check specific user orders")
-    @GetMapping(value = "/{userId}/orders")
+    @GetMapping(value = "admin/{userId}/orders")
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable(name = "userId") Long userId,
                                                     @RequestHeader("sessionID") UUID sessionID, Pageable pageable) {
         if (!loginService.getUser(sessionID).isAdmin())
