@@ -180,6 +180,7 @@ public class UserServiceImpl implements UserService {
         userRepository.findAll().forEach(user -> orderedUsers.put(orderRepository.countByUser(user), user));
         List<User> users = new ArrayList<>();
         orderedUsers.forEach((k, v) -> users.add(orderedUsers.get(k)));
+        users.remove(0);
         return users;
     }
 }
