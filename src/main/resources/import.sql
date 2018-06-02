@@ -12,3 +12,7 @@ insert into PRODUCTS(ID, PRODUCT_CODE, PRICE, IMG_URL, DESCRIPTION, STOCK, PURCH
 insert into ADDRESS(ID, POSTAL_CODE, TOWN, STREET) values (101, '12133', 'Peristeri', 'Parodos Filippiados 23'),(102, '12351', 'Agia Varvara', 'Plati P 12'), (103, '12351', 'Agia Varvara', 'Plati P 14');
 insert into USERS(ID, EMAIL, PASSWORD, LAST_NAME, FIRST_NAME, GENDER, PHONE, BIRTHDAY, IS_ADMIN, ADDRESS_ID) values (101, 'vamphelp1@yahoo.com', 'vamphelp1', 'ACME', 'admin', 'MALE', '6953580942', '1990-05-11 00:00:01.000000' , true, 101),(102, 'vamphelp2@yahoo.com', 'vamphelp2', 'LooneyToons', 'RoadRunner', 'MALE', '6978450687', '1985-12-05 00:00:01.000000', false, 102), (103, 'vamphelp3@yahoo.com', 'vamphelp3', 'LooneyToons', 'Koyot', 'MALE' , '2105446786', '1976-05-11 00:00:01.000000' , false, 103);
 insert into CART(ID, USER_ID ) values (101, 101),(102,102),(103,103);
+
+insert into ORDERS(ID, ORDER_CODE, PAYMENT_METH, PAYMENT_DATE, TOTAL_PRICE, COMMENTS, CANCELED, USER_ID) values (1, 'ORD-000001', 'CASH', '2018-01-02', 130.00, null, false, 102), (2, 'ORD-000030', 'CASH', '2018-05-14', 75.00, null, false, 102), (3, 'ORD-000002', 'CASH', '2018-01-03', 220.00, 'Deliver between 09:00 - 12:00', false, 103);
+
+insert into ITEM(ID, PRICE, AMOUNT, PRODUCT_ID, ORDER_ID, CART_ID) values (1, 100, 2, 101, 1, 1), (2, 30, 1, 102, 1, 1), (3,20,1,108,2,2),(4,55,1,107,2,2),(5,50,2,106,3,3),(6,70,1,103,3,3),(7,90,3,104,3,30,(8,10,2,105,3,3);

@@ -13,10 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-<<<<<<< HEAD
-
-=======
->>>>>>> 10ecf564621920ce57b717c891f0d788cf884a19
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -88,13 +84,8 @@ public class ProductController {
                 .body(productService.outOfStock());
     }
 
-<<<<<<< HEAD
-    @ApiOperation("Create a product")
-    @PostMapping(value = "/products")
-=======
     @ApiOperation(value = "Admin create product", notes = "price is Long that means 1000 is 10 euro")
     @PostMapping(value = "/admin/products")
->>>>>>> 10ecf564621920ce57b717c891f0d788cf884a19
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductResource product,
                                                  @RequestHeader("sessionID") UUID sessionID) {
         if (!loginService.getUser(sessionID).isAdmin())
