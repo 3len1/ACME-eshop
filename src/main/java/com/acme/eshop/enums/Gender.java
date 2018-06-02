@@ -12,21 +12,16 @@ public enum Gender {
         if (genderString == null)
             return null;
 
-        Gender gender;
         genderString = genderString.toUpperCase();
         switch (genderString) {
             case "MALE":
-                gender = MALE;
-                break;
+                return MALE;
             case "FEMALE":
-                gender = FEMALE;
-                break;
+                return FEMALE;
             case "OTHER":
-                gender = OTHER;
-                break;
+                return OTHER;
             default:
                 throw new RuntimeException("UNKNOWN gender" + genderString);
         }
-        return gender;
     }
 }

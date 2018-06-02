@@ -14,24 +14,18 @@ public enum PaymentType {
         if (paymentMethod == null)
             return null;
 
-        PaymentType paymentType;
         paymentMethod = paymentMethod.toUpperCase();
         switch (paymentMethod) {
             case "MASTERCARD":
-                paymentType = MASTERCARD;
-                break;
+                return MASTERCARD;
             case "VISA":
-                paymentType = VISA;
-                break;
+                return VISA;
             case "PAYPAL":
-                paymentType = PAYPAL;
-                break;
+                return PAYPAL;
             case "CASH":
-                paymentType = CASH;
-                break;
+                return CASH;
             default:
                 throw new RuntimeException("UNKNOWN payment method " + paymentMethod);
         }
-        return paymentType;
     }
 }

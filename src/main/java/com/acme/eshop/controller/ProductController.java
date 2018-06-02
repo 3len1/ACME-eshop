@@ -1,6 +1,7 @@
 package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.Product;
+import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.ProductResource;
 import com.acme.eshop.service.LoginService;
 import com.acme.eshop.service.ProductService;
@@ -12,8 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 10ecf564621920ce57b717c891f0d788cf884a19
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,99 +30,103 @@ public class ProductController {
     @Autowired
     private LoginService loginService;
 
+    @ApiOperation("Get product")
+    @GetMapping(value = "/products/{productCode}")
+    public ResponseEntity<Product> getProduct(@PathVariable(name = "productCode") String code) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(productService.showProduct(code));
+    }
+
     @ApiOperation("Get all products")
     @GetMapping(value = "/products")
     public ResponseEntity<Page<Product>> getAll(Pageable pageable) {
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productService.getAll(pageable));
     }
 
-    @ApiOperation("Get single product")
-    @GetMapping(value = "/products/{productCode}")
-    public ResponseEntity<Product> getProduct(@PathVariable String productCode) {
-
+    @ApiOperation("Product search")
+    @GetMapping(value = "/products/search")
+    public ResponseEntity<Page<Product>> search(@RequestParam(name = "category", required = false) String category,
+                                                @RequestParam(name = "priceMin", required = false) Long priceMin,
+                                                @RequestParam(name = "priceMax", required = false) Long priceMax,
+                                                @RequestParam(name = "soldMin", required = false) Integer soldMin,
+                                                @RequestParam(name = "soldMax", required = false) Integer soldMax,
+                                                Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productService.showProduct(productCode));
+                .body(productService.search(category, priceMin, priceMax, soldMin, soldMax, pageable));
+    }
+
+    @ApiOperation("Get most popular products")
+    @GetMapping(value = "/products/popular")
+    public ResponseEntity<List<Product>> getMostPopularProducts() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(productService.mostPurchased());
     }
 
     @ApiOperation("Get products by category")
     @GetMapping(value = "/{categoryName}/products")
-    public ResponseEntity<Page<Product>> getProductByCategory(@PathVariable String categoryName,
+    public ResponseEntity<Page<Product>> getProductByCategory(@PathVariable(name = "categoryName") String category,
                                                               Pageable pageable) {
-
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productService.productByCategory(categoryName, pageable));
+                .body(productService.productByCategory(category, pageable));
     }
 
-    @ApiOperation("Get most purchased products by category")
-    @GetMapping(value = "/{categoryName}/products/top")
-    public ResponseEntity<Page<Product>> getMostPurchasedByCategory(@RequestHeader("sessionID") UUID sessionID,
-                                                                    @PathVariable String categoryName,
-                                                                    Pageable pageable) {
-
-        if(loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
-        if(!loginService.getUser(sessionID).isAdmin()) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-        }
-
+    @ApiOperation("Get most popular products by category")
+    @GetMapping(value = "/{categoryName}/products/popular")
+    public ResponseEntity<Page<Product>> getMostPopularByCategory(@PathVariable(name = "categoryName") String category,
+                                                                  Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productService.mostPurchasedByCategory(categoryName, pageable));
+                .body(productService.mostPurchasedByCategory(category, pageable));
     }
 
+    @ApiOperation("Admin get out of stock products")
+    @GetMapping(value = "/admin/products/stock")
+    public ResponseEntity<List<Product>> getOutOfStockProducts(@RequestHeader("sessionID") UUID sessionID) {
+        if (!loginService.getUser(sessionID).isAdmin())
+            throw new WrongCredentialsException("Only admin can create products");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(productService.outOfStock());
+    }
+
+<<<<<<< HEAD
     @ApiOperation("Create a product")
     @PostMapping(value = "/products")
+=======
+    @ApiOperation(value = "Admin create product", notes = "price is Long that means 1000 is 10 euro")
+    @PostMapping(value = "/admin/products")
+>>>>>>> 10ecf564621920ce57b717c891f0d788cf884a19
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductResource product,
-                                 @RequestHeader("sessionID") UUID sessionID) {
-
-        if(loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
-        if(!loginService.getUser(sessionID).isAdmin()) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-        }
-
+                                                 @RequestHeader("sessionID") UUID sessionID) {
+        if (!loginService.getUser(sessionID).isAdmin())
+            throw new WrongCredentialsException("Only admin can create products");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productService.createProduct(product));
     }
 
-    @ApiOperation("Update product")
-    @PutMapping(value = "/products/{productCode}")
-    public ResponseEntity<Product> updateProduct(@Valid @RequestBody ProductResource product,
-                                                 @RequestParam String productCode,
+    @ApiOperation(value = "Admin update product", notes = "price is Long that means 1000 is 10 euro")
+    @PutMapping(value = "/admin/products/{productCode}")
+    public ResponseEntity<Product> updateProduct(@PathVariable(name = "productCode") String code,
+                                                 @Valid @RequestBody ProductResource product,
                                                  @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null)
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        if(!loginService.getUser(sessionID).isAdmin())
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-        if(!productCode.equals(product.getProductCode()))
-            return new ResponseEntity<Product>(HttpStatus.BAD_REQUEST);
-
-        return ResponseEntity.status(HttpStatus.OK)
+        if (!loginService.getUser(sessionID).isAdmin())
+            throw new WrongCredentialsException("Only admin can update products");
+        if (product.getProductCode() == null) product.setProductCode(code);
+        else if (!product.getProductCode().equals(code))
+            throw new ResourceNotValid("Product code must be the same with the product you want to update");
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(productService.updateProduct(product));
-
     }
 
-    @ApiOperation("Delete product")
-    @DeleteMapping(value = "/products/{productCode}")
-    public ResponseEntity deleteProduct(@RequestParam String productCode,
-                                        @RequestHeader("sessionID") UUID sessionID) {
+    @ApiOperation("Admin delete product")
+    @DeleteMapping(value = "/admin/products/{productCode}")
+    public ResponseEntity<String> deleteProduct(@PathVariable(name = "productCode") String code,
+                                                @RequestHeader("sessionID") UUID sessionID) {
 
-        if(loginService.getUser(sessionID) == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
-        if(!loginService.getUser(sessionID).isAdmin()) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-        }
-
-        productService.deleteProduct(productCode);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (!loginService.getUser(sessionID).isAdmin())
+            throw new WrongCredentialsException("Only admin can delete products");
+        productService.deleteProduct(code);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product deleted");
     }
 
 }

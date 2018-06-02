@@ -2,18 +2,17 @@ package com.acme.eshop.domain;
 
 import com.acme.eshop.enums.PaymentType;
 import com.acme.eshop.utils.DateConverter;
-
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
  */
 @Entity
-@Table(name="ORDERS")
+@Table(name = "ORDERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Order extends PersistableEntity {
+public class Order extends PersistableEntity implements Serializable {
 
     @Column(name = "ORDER_CODE", unique = true)
     private String orderCode;
@@ -36,24 +35,20 @@ public class Order extends PersistableEntity {
     private boolean canceled;
 
 
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
-    @JoinColumn(name="USER_ID",referencedColumnName="ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
 
-    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
-               cascade = CascadeType.REMOVE, orphanRemoval=true)
-    private List<Item> items;
 
     public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice,
-                 String comments,boolean canceled, User user, List<Item> items) {
+                 String comments, boolean canceled, User user) {
         this.orderCode = orderCode;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
         this.totalPrice = totalPrice;
         this.comments = comments;
-        this.canceled =canceled;
+        this.canceled = canceled;
         this.user = user;
-        this.items = items;
     }
 
     public Order() {
@@ -99,9 +94,13 @@ public class Order extends PersistableEntity {
         this.comments = comments;
     }
 
-    public boolean isCanceled() { return canceled; }
+    public boolean isCanceled() {
+        return canceled;
+    }
 
-    public void setCanceled(boolean canceled) { this.canceled = canceled;}
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
+    }
 
     public User getUser() {
         return user;
@@ -111,12 +110,10 @@ public class Order extends PersistableEntity {
         this.user = user;
     }
 
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
+    public BigDecimal calculatePrice(BigDecimal price) {
+        if (this.totalPrice == null) totalPrice = new BigDecimal(0);
+        this.totalPrice = this.totalPrice.add(price);
+        return this.totalPrice;
     }
 
     @Override

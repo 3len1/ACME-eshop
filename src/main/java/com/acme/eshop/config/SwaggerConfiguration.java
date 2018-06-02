@@ -9,7 +9,6 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 import java.util.ArrayList;
 
 /**
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 public class SwaggerConfiguration {
 
     @Bean
-    public Docket apiConfig(){
+    public Docket apiConfig() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2);
 
         docket.select()
@@ -32,7 +31,7 @@ public class SwaggerConfiguration {
         return docket;
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
 
         Contact contact = new Contact("Koyot team",
                 "https://github.com/3len1/SpringRestApi", "vseleni@gmail.com");

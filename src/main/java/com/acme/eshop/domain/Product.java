@@ -1,8 +1,8 @@
 package com.acme.eshop.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Created by Eleni on 5/8/2018.
@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "PRODUCTS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Product extends PersistableEntity {
+public class Product extends PersistableEntity implements Serializable {
 
     @Column(name = "PRODUCT_CODE", unique = true)
     private String productCode;
@@ -34,13 +34,8 @@ public class Product extends PersistableEntity {
     @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
     private ProductCategory category;
 
-    @OneToMany(mappedBy = "product", targetEntity = Item.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Item> items;
-
-
     public Product(String productCode, BigDecimal price, String imgUrl, String description,
-                   Integer stockAmmount, Integer purchased, ProductCategory category, List<Item> items) {
+                   Integer stockAmmount, Integer purchased, ProductCategory category) {
         this.productCode = productCode;
         this.price = price;
         this.imgUrl = imgUrl;
@@ -48,7 +43,6 @@ public class Product extends PersistableEntity {
         this.stockAmount = stockAmmount;
         this.purchased = purchased;
         this.category = category;
-        this.items = items;
     }
 
     public Product() {
@@ -110,44 +104,36 @@ public class Product extends PersistableEntity {
         this.category = category;
     }
 
-    public List<Item> getItems() {
-        return items;
-    }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public boolean incriseStockAmount(Integer amount){
-        if (this.stockAmount < 0 || amount < 0){
+    public boolean increaseStockAmount(Integer amount) {
+        if (this.stockAmount < 0 || amount < 0) {
             return false;
         }
         this.stockAmount += amount;
         return true;
     }
 
-    public boolean minusStockAmount(Integer amount){
-        if (this.stockAmount - amount < 1){
-          return false;
+    public boolean minusStockAmount(Integer amount) {
+        if (this.stockAmount - amount < 1) {
+            return false;
         }
         this.stockAmount -= amount;
         return true;
     }
 
-    public boolean incisePurchased(Integer amount){
+    public boolean increasePurchased(Integer amount) {
         if (this.purchased < 0 || amount < 0)
             return false;
         this.purchased += amount;
         return true;
     }
 
-    public boolean minusPurchased(Integer amount){
+    public boolean minusPurchased(Integer amount) {
         if (this.purchased - amount < 1)
             return false;
         this.purchased += amount;
         return true;
     }
-
 
 
     @Override

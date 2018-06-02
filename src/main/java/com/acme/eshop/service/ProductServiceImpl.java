@@ -3,6 +3,10 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.ProductConverter;
 import com.acme.eshop.domain.Product;
 import com.acme.eshop.domain.ProductCategory;
+import com.acme.eshop.exceptions.CategoryNotFoundException;
+import com.acme.eshop.exceptions.ProductAlreadyExistException;
+import com.acme.eshop.exceptions.ProductNotFoundException;
+import com.acme.eshop.exceptions.ResourceNotValid;
 import com.acme.eshop.resources.ProductResource;
 import com.acme.eshop.repository.ProductCategoryRepository;
 import com.acme.eshop.repository.ProductRepository;
@@ -13,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final String OUT_OF_STOCK = "0";
+
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -43,22 +47,23 @@ public class ProductServiceImpl implements ProductService {
     public Product createProduct(ProductResource product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null, checkProduct;
-        if (product.getProductCode() != null)
-            checkProduct = productRepository.findByProductCode(product.getProductCode());
-        else{
+        if (product.getProductCode() == null) {
             log.warn("The given product doesn't have product code");
-            return null;
+            throw new ResourceNotValid("Product code require in order to create a product");
         }
-        if (category != null && checkProduct == null) {
+        checkProduct = productRepository.findByProductCode(product.getProductCode());
+        if (category == null){
+            log.warn("Category [{}] does not exist", product.getCategoryName());
+            throw new CategoryNotFoundException("Category does not exist");
+        }
+        if (checkProduct == null) {
             retrieveProduct = productConverter.getProduct(product, category);
             retrieveProduct.setCreatedDate(DateUtils.epochNow());
             log.info("Admin create a new product [{}]", product.getProductCode());
+            return productRepository.save(retrieveProduct);
         }
-        else{
-            log.warn("Ether product [{}] already exist or category [{}] doesn't exist" , product.getProductCode(), product.getCategoryName());
-            return null;
-        }
-        return retrieveProduct != null ? productRepository.save(retrieveProduct) : null;
+        log.warn("Product [{}] already exist" , product.getProductCode());
+        throw new ProductAlreadyExistException("Product already exist");
     }
 
 
@@ -67,19 +72,22 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(ProductResource product) {
         ProductCategory category = productCategoryRepository.findByName(product.getCategoryName());
         Product retrieveProduct = null, checkProduct;
-        if (product.getProductCode() != null)
-            checkProduct = productRepository.findByProductCode(product.getProductCode());
-        else {
+        if (product.getProductCode() == null) {
             log.warn("The given product doesn't have product code");
-            return null;
+            throw new ResourceNotValid("Product code require in order to create a product");
         }
-        if (category != null && checkProduct != null)
+        checkProduct = productRepository.findByProductCode(product.getProductCode());
+        if (category == null){
+            log.warn("Category [{}] does not exist", product.getCategoryName());
+            throw new CategoryNotFoundException("Category does not exist");
+        }
+        if (checkProduct != null) {
             retrieveProduct = productConverter.getProduct(product, category);
-        else{
-            log.warn("Ether product [{}] or category [{}] doesn't exist" , product.getProductCode(), product.getCategoryName());
-            return null;
+            retrieveProduct.setId(checkProduct.getId());
+            return productRepository.save(retrieveProduct);
         }
-        return (retrieveProduct != null) ? productRepository.save(retrieveProduct) : null;
+        log.warn("Product [{}] does not exist" , product.getProductCode());
+        throw new ProductNotFoundException("Product does not already exist");
     }
 
 
@@ -100,21 +108,28 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<Product> mostPurchasedByCategory(String categoryName, Pageable pageable) {
         ProductCategory category = productCategoryRepository.findByName(categoryName);
-        if (category == null)log.warn("Category [{}] does not exist", categoryName);
-        return category != null ? productRepository.findByCategoryOrderByPurchasedDesc(category, pageable) : null;
+        if (category == null){
+            log.warn("Category [{}] does not exist", categoryName);
+            throw new CategoryNotFoundException("Category does not exist");
+        }
+        return  productRepository.findByCategoryOrderByPurchasedDesc(category, pageable);
     }
 
     @Override
     public Page<Product> productByCategory(String categoryName, Pageable pageable) {
         ProductCategory category = productCategoryRepository.findByName(categoryName);
-        if (category == null) log.warn("Category [{}] does not exist", categoryName);
-        return category != null ? productRepository.findByCategory(category, pageable) : null;
+        if (category == null) {
+            log.warn("Category [{}] does not exist", categoryName);
+            throw new CategoryNotFoundException("Category does not exist");
+        }
+        return productRepository.findByCategory(category, pageable);
     }
 
     @Override
-    public Page<Product> search(String categoryName, BigDecimal priceMin, BigDecimal priceMax, Integer purchasedMin, Integer purchasedMax, Pageable pageable) {
-        ProductCategory category = productCategoryRepository.findByName(categoryName);
-        return category != null ? productRepository.findWithCriteria(category, priceMin, priceMax, purchasedMin, purchasedMax, pageable) : null;
+    public Page<Product> search(String categoryName, Long priceMin, Long priceMax, Integer purchasedMin, Integer purchasedMax, Pageable pageable) {
+        return productRepository.findWithCriteria((categoryName!=null)?productCategoryRepository.findByName(categoryName):null,
+                (priceMin!=null)? BigDecimal.valueOf(priceMin/100): null, (priceMax!=null)? BigDecimal.valueOf(priceMax/100): null,
+                purchasedMin, purchasedMax, pageable);
     }
 
     @Override

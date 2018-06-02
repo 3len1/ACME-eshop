@@ -1,6 +1,7 @@
 package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.Order;
+import com.acme.eshop.exceptions.ResourceNotValid;
 import com.acme.eshop.resources.OrderResource;
 import com.acme.eshop.enums.PaymentType;
 import javaslang.control.Try;
@@ -19,6 +20,6 @@ public class OrderConverter {
             order.setComments(orderResource.getComments());
             order.setPaymentMethod(PaymentType.fromString(orderResource.getPaymentMethod()));
             return order;
-        }).getOrElseGet(null);
+        }).getOrElseThrow(()-> new ResourceNotValid("Order resource is not valid"));
     }
 }

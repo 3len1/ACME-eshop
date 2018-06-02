@@ -3,6 +3,8 @@ package com.acme.eshop.service;
 import com.acme.eshop.converter.AddressConverter;
 import com.acme.eshop.domain.Address;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.exceptions.ResourceNotValid;
+import com.acme.eshop.exceptions.UserNotFoundException;
 import com.acme.eshop.resources.AddressResource;
 import com.acme.eshop.repository.AddressRepository;
 import com.acme.eshop.repository.UserRepository;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 
 @Component("addressService")
@@ -26,33 +29,39 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     AddressConverter addressConverter;
 
-    @Override
-    public Address getUserAddress(Long userId) {
-        User user = userRepository.findById(userId).orElseGet(null);
-        return (user != null) ? addressRepository.findByUserId(user.getId()) : null;
-    }
 
     @Transactional
     @Override
-    public Address updateUserAddress(Long userId, AddressResource addressResource) {
+    public Address updateUserAddress(AddressResource addressResource, Long userId) {
         User user = userRepository.findById(userId).orElseGet(null);
+        if (user == null) {
+            log.warn("User [{}] does not exist", userId);
+            throw new UserNotFoundException("User not found");
+        }
+        Address oldAddresses = user.getAddress();
         Address address = addressConverter.getAddress(addressResource);
-        if(user == null) log.warn("User [{}] does not exist" , userId);
-        else if (address == null) log.warn("Address for user [{}] can't be updated" , userId);
-        else {
-            address.setId(user.getAddress().getId());
+        if (address == null) {
+            log.warn("Address for user [{}] can't be updated", userId);
+            throw new ResourceNotValid("Address is not valid");
+        } else {
+            Optional.ofNullable(address.getPostalCode()).ifPresent(oldAddresses::setPostalCode);
+            Optional.ofNullable(address.getStreet()).ifPresent(oldAddresses::setStreet);
+            Optional.ofNullable(address.getTown()).ifPresent(oldAddresses::setTown);
             log.info("Address for user [{}] updated", userId);
         }
-        return (user != null && address != null) ? addressRepository.save(address) : null;
+        return addressRepository.save(address);
     }
 
     @Transactional
     @Override
-    public Address createUserAddress(AddressResource addressResource, User user) {
+    public Address createUserAddress(AddressResource addressResource, Long userId) {
         Address address = addressConverter.getAddress(addressResource);
+        if (address == null) {
+            log.warn("Address for user [{}] can't be updated", userId);
+            throw new ResourceNotValid("Address is not valid");
+        }
         address.setCreatedDate(DateUtils.epochNow());
-        address.setUserId(user.getId());
-        log.info("Address for user [{}] created",user.getId());
+        log.info("Address for user [{}] created", userId);
         return addressRepository.save(address);
     }
 }

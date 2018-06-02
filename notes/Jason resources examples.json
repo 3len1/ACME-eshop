@@ -1,0 +1,54 @@
+//ADMIN LOGIN
+{
+  "email": "vamphelp1@yahoo.com",
+  "password": "vamphelp1"
+}
+
+
+//USER LOGIN
+{
+  "email": "vamphelp2@yahoo.com",
+  "password": "vamphelp2"
+}
+
+//USER JSON
+{
+  "address": {
+    "postalCode": "12351",
+    "street": "Plati P 32",
+    "town": "Agia Varvara"
+  },
+  "birthday": "2018-05-28T09:34:50.209Z",
+  "email": "geo@in.gr",
+  "firstName": "Giwrgos",
+  "gender": "MALE",
+  "lastName": "Papadimas",
+  "password": "123qwe",
+  "phone": "2105753088",
+  "type": "ADMIN"
+}
+
+//PRODUCT JSON
+{
+  "categoryName": "Pistols",
+  "description": "Loaded gun",
+  "imgUrl": "/img/products/P004",
+  "price": 0,
+  "productCode": "P004",
+  "purchased": "12",
+  "stock": "0"
+}
+
+
+//ITEM JSON
+{
+  "amount": "5",
+  "productCode": "P001"
+}
+
+//ORDER JSON
+{
+  "comments": "I have to kill your mother",
+  "orderCode": "Order1",
+  "paymentMethod": "PAYPAL"
+}

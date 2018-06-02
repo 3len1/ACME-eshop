@@ -1,6 +1,8 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.User;
+import com.acme.eshop.exceptions.NotIdenticalUserException;
+import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +27,18 @@ public class LogInServiceImpl implements LoginService {
     @Override
     public User getUser(UUID token) {
         List<User> users = userRepository.findByToken(token);
-        return (users.size() == 1) ? users.get(0) : null;
+        if (users.size() == 1)
+            return users.get(0);
+        if (users.isEmpty()) throw new WrongCredentialsException("User haven't login yet");
+        log.error("There are more than one user log in [{}]", token);
+        throw new NotIdenticalUserException("User is not identical");
     }
 
     @Transactional
     @Override
     public User logIn(String email, String password) {
+        if (email == null && password == null)
+            throw new WrongCredentialsException("You must give email and password for login");
         User user = userRepository.findByEmailAndPassword(email, password);
         if (user != null) {
             user.setToken(UUID.randomUUID());
@@ -38,7 +46,7 @@ public class LogInServiceImpl implements LoginService {
             return userRepository.save(user);
         }
         log.warn("Credentials email [{}] and password [{}] are not correct", email, password);
-        return null;
+        throw new WrongCredentialsException("Credentials are not correct");
     }
 
     @Transactional
@@ -49,9 +57,12 @@ public class LogInServiceImpl implements LoginService {
             users.get(0).setToken(null);
             userRepository.save(users.get(0));
             log.info("User [{}} log out successfully ", users.get(0).getId());
-        } else if (users.size() > 1)
+        } else if (users.size() > 1) {
             log.warn("Token [{}} is not unique", token);
-        else
+            throw new NotIdenticalUserException("User is not identical");
+        } else {
             log.warn("Token [{}] is not valid", token);
+            throw new WrongCredentialsException("User haven't login yet");
+        }
     }
 }

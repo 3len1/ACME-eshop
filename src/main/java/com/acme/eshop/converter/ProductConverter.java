@@ -2,6 +2,7 @@ package com.acme.eshop.converter;
 
 import com.acme.eshop.domain.Product;
 import com.acme.eshop.domain.ProductCategory;
+import com.acme.eshop.exceptions.ResourceNotValid;
 import com.acme.eshop.resources.ProductResource;
 import javaslang.control.Try;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class ProductConverter {
             product.setPurchased(0);
             product.setCategory(category);
             return product;
-        }).getOrElseGet(null);
+        }).getOrElseThrow(()-> new ResourceNotValid("Product resource is not valid"));
     }
 
 }

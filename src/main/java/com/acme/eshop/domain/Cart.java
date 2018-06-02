@@ -1,7 +1,7 @@
 package com.acme.eshop.domain;
 
 import javax.persistence.*;
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * Created by Eleni on 14/5/2018.
@@ -9,19 +9,14 @@ import java.util.List;
 @Entity
 @Table(name = "CART")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Cart extends PersistableEntity {
+public class Cart extends PersistableEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "id", targetEntity = Item.class, fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Item> items;
-
-    public Cart(User user, List<Item> items) {
+    public Cart(User user) {
         this.user = user;
-        this.items = items;
     }
 
     public Cart() {
@@ -35,11 +30,5 @@ public class Cart extends PersistableEntity {
         this.user = user;
     }
 
-    public List<Item> getItems() {
-        return items;
-    }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
 }

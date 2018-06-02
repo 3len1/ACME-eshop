@@ -1,13 +1,10 @@
 package com.acme.eshop.domain;
 
-
 import com.acme.eshop.utils.DateConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.*;
-
 
 
 /**
@@ -22,7 +19,7 @@ abstract public class PersistableEntity implements Persistable<Long> {
     private Long id;
 
     @CreatedDate
-    @Convert(converter=DateConverter.class)
+    @Convert(converter = DateConverter.class)
     private Long createdDate;
 
     public PersistableEntity() {
