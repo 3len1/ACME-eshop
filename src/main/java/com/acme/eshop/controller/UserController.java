@@ -68,15 +68,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAll(isAdmin, pageable));
     }
 
-    @ApiOperation("Admin get all user profiles order by number of order")
-    @GetMapping(value = "/admin/users/sorted")
-    public ResponseEntity<List<UserCountDto>> getUsersSorted(@RequestHeader("sessionID") UUID sessionID) {
-        boolean isAdmin = loginService.getUser(sessionID).isAdmin();
-        if (!isAdmin)
-            throw new WrongCredentialsException("Only admin can see all accounts");
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllOrderByNumberOFOrders(isAdmin));
-    }
-
     @ApiOperation("Admin create user")
     @PostMapping(value = "/admin/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserResource user,

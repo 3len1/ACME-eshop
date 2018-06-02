@@ -5,6 +5,7 @@ import com.acme.eshop.domain.CartItem;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.OrderItem;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
@@ -213,5 +214,10 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderItem> getAllItemsFromOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
         return new ArrayList<>(order.getItems());
+    }
+
+    @Override
+    public List<UserCountDto> getUserOrders(boolean isAdmin) {
+        return orderRepository.getUserOrders();
     }
 }

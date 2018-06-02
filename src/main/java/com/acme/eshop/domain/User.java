@@ -3,6 +3,8 @@ package com.acme.eshop.domain;
 
 import com.acme.eshop.enums.Gender;
 import com.acme.eshop.utils.DateConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -17,9 +19,11 @@ import java.util.UUID;
 public class User extends PersistableEntity implements Serializable {
 
 
+    @JsonIgnore
     @Column(name = "EMAIL", nullable = false, length = 30, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "PASSWORD", nullable = false, length = 30)
     private String password;
 

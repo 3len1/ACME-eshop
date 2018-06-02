@@ -26,7 +26,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByUser(User user, Pageable pageable);
     Page<Order> findAll(Pageable pageable);
 
-    @Query("select o.user as user, count(o) as orderCount from Order o order by count(o) desc")
+    @Query("select new com.acme.eshop.dto.UserCountDto(u as user, count(*) as orderCount) from Order o JOIN o.user u group by u order by count(*) desc")
     List<UserCountDto> getUserOrders();
 
 }

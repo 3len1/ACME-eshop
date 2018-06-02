@@ -2,6 +2,7 @@ package com.acme.eshop.service;
 
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.OrderItem;
+import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
 import org.springframework.data.domain.Page;
@@ -22,5 +23,6 @@ public interface OrderService {
     boolean cancelOrder(String orderCode, Long userId);
     void deleteOrder(String orderCode, Long userId);
     List<OrderItem> getAllItemsFromOrder(String orderCode, Long userId);
+    List<UserCountDto> getUserOrders(boolean isAdmin);
 
 }

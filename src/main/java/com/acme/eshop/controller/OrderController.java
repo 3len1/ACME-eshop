@@ -3,6 +3,7 @@ package com.acme.eshop.controller;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.OrderItem;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
@@ -137,6 +138,15 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(orderService.addItemsToOrder(orderCode, item, user.getId()));
 
+    }
+
+    @ApiOperation("Admin get all user profiles order by number of order")
+    @GetMapping(value = "/admin/users/sorted")
+    public ResponseEntity<List<UserCountDto>> getUsersSorted(@RequestHeader("sessionID") UUID sessionID) {
+        boolean isAdmin = loginService.getUser(sessionID).isAdmin();
+        if (!isAdmin)
+            throw new WrongCredentialsException("Only admin can see all accounts");
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.getUserOrders(isAdmin));
     }
 
 }
