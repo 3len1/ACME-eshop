@@ -2,12 +2,15 @@ package com.acme.eshop.repository;
 
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserCountDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 /**
@@ -23,7 +26,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByUser(User user, Pageable pageable);
     Page<Order> findAll(Pageable pageable);
 
-    @Query("select count(o) from Order o where o.user = ?1")
-    Integer countByUser(@Param("user") User user);
+    @Query("select o.user as user, count(o) as orderCount from Order o order by count(o) desc")
+    List<UserCountDto> getUserOrders();
 
 }

@@ -1,15 +1,12 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.Cart;
-import com.acme.eshop.domain.Item;
+import com.acme.eshop.domain.CartItem;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.exceptions.ProductNotFoundException;
 import com.acme.eshop.exceptions.UserNotFoundException;
+import com.acme.eshop.repository.*;
 import com.acme.eshop.resources.ItemResource;
-import com.acme.eshop.repository.CartRepository;
-import com.acme.eshop.repository.ItemRepository;
-import com.acme.eshop.repository.ProductRepository;
-import com.acme.eshop.repository.UserRepository;
 import com.acme.eshop.utils.DateUtils;
 import com.acme.eshop.utils.PriceUtils;
 import org.slf4j.Logger;
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +33,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    ItemRepository itemRepository;
+    CartItemRepository itemRepository;
 
     @Override
     public Cart getCartByUser(Long userId) {
@@ -50,15 +48,13 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public Cart addItemToCart(ItemResource addedItem, Long userId) {
-        Item item = new Item();
+        CartItem item = new CartItem();
         Cart userCart = getCartByUser(userId);
         Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);
             item.setAmount((addedItem.getAmount() != null) ? Integer.parseInt(addedItem.getAmount()) : 1);
-            item.setPrice(PriceUtils.bigDecimalMultiply(product.getPrice(), item.getAmount()));
             item.setCreatedDate(DateUtils.epochNow());
             item.setCart(userCart);
-            item.setOrder(null);
             log.info("Product [{}] added [{}] times to user's [{}] cart", product.getProductCode(), item.getAmount(), userId);
             itemRepository.saveAndFlush(item);
         });
@@ -71,7 +67,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public List<Item> removeItemFromCart(String productCode, Long userId) {
+    public List<CartItem> removeItemFromCart(String productCode, Long userId) {
         Cart cart = getCartByUser(userId);
         final Boolean[] productExist = {false};
         Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product -> {
@@ -102,8 +98,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<Item> getAllItemsFromCart(Long userId) {
+    public List<CartItem> getAllItemsFromCart(Long userId) {
         Cart cart = getCartByUser(userId);
-        return (cart != null) ? itemRepository.findByCart(cart) : null;
+        return (cart != null) ? new ArrayList<>(cart.getItems()) : null;
     }
 }

@@ -1,7 +1,7 @@
 package com.acme.eshop.controller;
 
-import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
+import com.acme.eshop.domain.OrderItem;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.ItemResource;
@@ -60,8 +60,8 @@ public class OrderController {
 
     @ApiOperation(value = "Get all items from order")
     @GetMapping(value = "/orders/{orderCode}/items")
-    public ResponseEntity<List<Item>> getAllItemsFromOrder(@PathVariable(name = "orderCode") String orderCode,
-                                                           @RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<List<OrderItem>> getAllItemsFromOrder(@PathVariable(name = "orderCode") String orderCode,
+                                                                @RequestHeader("sessionID") UUID sessionID) {
         User user = loginService.getUser(sessionID);
         if (user == null)
             throw new WrongCredentialsException("Only login user can see items from order");

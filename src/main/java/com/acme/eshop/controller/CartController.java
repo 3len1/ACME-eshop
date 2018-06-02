@@ -1,7 +1,7 @@
 package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.Cart;
-import com.acme.eshop.domain.Item;
+import com.acme.eshop.domain.CartItem;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.ItemResource;
@@ -36,8 +36,8 @@ public class CartController {
 
     @ApiOperation("Get items from user's cart")
     @GetMapping(value = "/{userId}/cart")
-    public ResponseEntity<List<Item>> getCartByUser(@PathVariable(name = "userId") Long userId,
-                                                    @RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<List<CartItem>> getCartByUser(@PathVariable(name = "userId") Long userId,
+                                                        @RequestHeader("sessionID") UUID sessionID) {
         User loginUser = loginService.getUser(sessionID);
         if (loginUser.isAdmin() || userId.equals(loginUser.getId()))
             return ResponseEntity.status(HttpStatus.OK)
@@ -62,9 +62,9 @@ public class CartController {
 
     @ApiOperation("User remove product form cart")
     @DeleteMapping(value = "/{userId}/cart")
-    public ResponseEntity<List<Item>> removeItemFromCart(@PathVariable(name = "userId") Long userId,
-                                                         @NotNull @RequestBody String productCode,
-                                                         @RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<List<CartItem>> removeItemFromCart(@PathVariable(name = "userId") Long userId,
+                                                             @NotNull @RequestBody String productCode,
+                                                             @RequestHeader("sessionID") UUID sessionID) {
         User loginUser = loginService.getUser(sessionID);
         if (!userId.equals(loginUser.getId())) {
             log.warn("Login user [{}] has not access to see users [{}] cart", loginUser.getId(), userId);

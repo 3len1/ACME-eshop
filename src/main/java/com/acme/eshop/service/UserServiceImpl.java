@@ -4,6 +4,7 @@ import com.acme.eshop.converter.UserConverter;
 import com.acme.eshop.domain.Address;
 import com.acme.eshop.domain.Cart;
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.repository.AddressRepository;
@@ -11,6 +12,7 @@ import com.acme.eshop.repository.CartRepository;
 import com.acme.eshop.repository.OrderRepository;
 import com.acme.eshop.repository.UserRepository;
 import com.acme.eshop.utils.DateUtils;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,14 +175,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllOrderByNumberOFOrders(boolean isAdmin) {
-        //TODO check if it work i am not sure at all is there any better way
-        Map<Integer, User> orderedUsers = new TreeMap<>();
+    public List<UserCountDto> getAllOrderByNumberOFOrders(boolean isAdmin) {
         if (!isAdmin) throw new WrongCredentialsException("You are not aloud to see other account");
-        userRepository.findAll().forEach(user -> orderedUsers.put(orderRepository.countByUser(user), user));
-        List<User> users = new ArrayList<>();
-        orderedUsers.forEach((k, v) -> users.add(orderedUsers.get(k)));
-        users.remove(0);
-        return users;
+        return orderRepository.getUserOrders();
     }
 }

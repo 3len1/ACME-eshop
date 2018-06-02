@@ -1,6 +1,7 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.resources.UserResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,6 @@ public interface UserService {
     User adminUpdateUser(UserResource user, boolean isAdmin, Long userId);
     void adminDeleteUser(Long userId, boolean isAdmin);
     Page<User> getAll(boolean isAdmin, Pageable pageable);
-    List<User> getAllOrderByNumberOFOrders(boolean isAdmin);
+    List<UserCountDto> getAllOrderByNumberOFOrders(boolean isAdmin);
 
 }

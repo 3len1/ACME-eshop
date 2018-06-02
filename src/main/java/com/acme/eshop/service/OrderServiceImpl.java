@@ -1,8 +1,9 @@
 package com.acme.eshop.service;
 
 import com.acme.eshop.converter.OrderConverter;
-import com.acme.eshop.domain.Item;
+import com.acme.eshop.domain.CartItem;
 import com.acme.eshop.domain.Order;
+import com.acme.eshop.domain.OrderItem;
 import com.acme.eshop.domain.User;
 import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.ItemResource;
@@ -18,8 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component("orderService")
 public class OrderServiceImpl implements OrderService {
@@ -31,11 +35,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     OrderRepository orderRepository;
     @Autowired
-    CartRepository cartRepository;
-    @Autowired
     ProductRepository productRepository;
     @Autowired
-    ItemRepository itemRepository;
+    OrderItemRepository itemRepository;
     @Autowired
     CartService cartService;
     @Autowired
@@ -113,20 +115,26 @@ public class OrderServiceImpl implements OrderService {
             throw new UserNotFoundException("User not found");
         }
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
-            List<Item> cartsItems = itemRepository.findByCart(cart);
+            Set<CartItem> cartsItems = cart.getItems();
             Order order = orderConverter.getOrder(orderResource);
-            cartsItems.forEach(item -> {
-                item.setOrder(order);
-                item.setCart(null);
-                item.getProduct().increasePurchased(item.getAmount());
-                item.getProduct().minusStockAmount(item.getAmount());
-                productRepository.save(item.getProduct());
-                itemRepository.save(item);
-                order.calculatePrice(item.getPrice());
-            });
             order.setUser(loginUser);
             order.setCreatedDate(DateUtils.epochNow());
             orderRepository.save(order);
+            cartsItems.forEach(cartItem -> {
+                cartItem.setCart(null);
+                cartItem.getProduct().increasePurchased(cartItem.getAmount());
+                cartItem.getProduct().minusStockAmount(cartItem.getAmount());
+                productRepository.save(cartItem.getProduct());
+                OrderItem orderItem = new OrderItem();
+                orderItem.setAmount(cartItem.getAmount());
+                orderItem.setPrice(PriceUtils.bigDecimalMultiply(cartItem.getProduct().getPrice(), cartItem.getAmount()));
+                orderItem.setProduct(cartItem.getProduct());
+                orderItem.setCreatedDate(DateUtils.epochNow());
+                orderItem.setOrder(order);
+                itemRepository.save(orderItem);
+                order.calculatePrice(orderItem.getPrice());
+            });
+
             log.info("User [{}] create order [{}] successfully", userId, orderResource.getOrderCode());
         });
         return orderRepository.findOneByOrderCode(orderResource.getOrderCode());
@@ -141,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
                     order.getOrderCode());
             throw new OrderAlreadyPayed("Order is already paid or canceled");
         }
-        Item item = new Item();
+        OrderItem item = new OrderItem();
         Optional.ofNullable(productRepository.findByProductCode(addedItem.getProductCode())).ifPresent(product -> {
             item.setProduct(product);
             item.setAmount((addedItem.getAmount() != null) ? Integer.parseInt(addedItem.getAmount()) : 1);
@@ -202,8 +210,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Item> getAllItemsFromOrder(String orderCode, Long userId) {
+    public List<OrderItem> getAllItemsFromOrder(String orderCode, Long userId) {
         Order order = showOrder(orderCode, userId);
-        return itemRepository.findByOrder(order);
+        return new ArrayList<>(order.getItems());
     }
 }

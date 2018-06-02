@@ -13,7 +13,6 @@ import java.io.Serializable;
 public class Address extends PersistableEntity implements Serializable {
 
     @Column(name = "POSTAL_CODE")
-    @Size(max = 5)
     private String postalCode;
 
     @Column(name = "TOWN", length = 20)

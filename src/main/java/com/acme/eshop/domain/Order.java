@@ -2,9 +2,12 @@ package com.acme.eshop.domain;
 
 import com.acme.eshop.enums.PaymentType;
 import com.acme.eshop.utils.DateConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * Created by Eleni on 5/8/2018.
@@ -34,11 +37,13 @@ public class Order extends PersistableEntity implements Serializable {
     @Column(name = "CANCELED")
     private boolean canceled;
 
+    @OneToMany(mappedBy="order")
+    private Set<OrderItem> items;
 
+    @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
-
 
     public Order(String orderCode, PaymentType paymentMethod, Long paymentDate, BigDecimal totalPrice,
                  String comments, boolean canceled, User user) {
@@ -110,11 +115,20 @@ public class Order extends PersistableEntity implements Serializable {
         this.user = user;
     }
 
+    public Set<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<OrderItem> items) {
+        this.items = items;
+    }
+
     public BigDecimal calculatePrice(BigDecimal price) {
         if (this.totalPrice == null) totalPrice = new BigDecimal(0);
         this.totalPrice = this.totalPrice.add(price);
         return this.totalPrice;
     }
+
 
     @Override
     public boolean equals(Object o) {

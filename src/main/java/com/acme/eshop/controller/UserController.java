@@ -1,6 +1,7 @@
 package com.acme.eshop.controller;
 
 import com.acme.eshop.domain.User;
+import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.exceptions.WrongCredentialsException;
 import com.acme.eshop.resources.UserResource;
 import com.acme.eshop.service.LoginService;
@@ -69,7 +70,7 @@ public class UserController {
 
     @ApiOperation("Admin get all user profiles order by number of order")
     @GetMapping(value = "/admin/users/sorted")
-    public ResponseEntity<List<User>> getUsersSorted(@RequestHeader("sessionID") UUID sessionID) {
+    public ResponseEntity<List<UserCountDto>> getUsersSorted(@RequestHeader("sessionID") UUID sessionID) {
         boolean isAdmin = loginService.getUser(sessionID).isAdmin();
         if (!isAdmin)
             throw new WrongCredentialsException("Only admin can see all accounts");

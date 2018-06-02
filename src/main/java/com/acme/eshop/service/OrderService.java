@@ -1,7 +1,7 @@
 package com.acme.eshop.service;
 
-import com.acme.eshop.domain.Item;
 import com.acme.eshop.domain.Order;
+import com.acme.eshop.domain.OrderItem;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
 import org.springframework.data.domain.Page;
@@ -21,6 +21,6 @@ public interface OrderService {
     Order removeItemFromOrder(String orderCode, String productCode, Long userId);
     boolean cancelOrder(String orderCode, Long userId);
     void deleteOrder(String orderCode, Long userId);
-    List<Item> getAllItemsFromOrder(String orderCode, Long userId);
+    List<OrderItem> getAllItemsFromOrder(String orderCode, Long userId);
 
 }

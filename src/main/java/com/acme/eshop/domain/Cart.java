@@ -1,7 +1,10 @@
 package com.acme.eshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by Eleni on 14/5/2018.
@@ -11,12 +14,18 @@ import java.io.Serializable;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Cart extends PersistableEntity implements Serializable {
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    public Cart(User user) {
+
+    @OneToMany(mappedBy="cart")
+    private Set<CartItem> items;
+
+    public Cart(User user, Set<CartItem> items) {
         this.user = user;
+        this.items = items;
     }
 
     public Cart() {
@@ -30,5 +39,11 @@ public class Cart extends PersistableEntity implements Serializable {
         this.user = user;
     }
 
+    public Set<CartItem> getItems() {
+        return items;
+    }
 
+    public void setItems(Set<CartItem> items) {
+        this.items = items;
+    }
 }
