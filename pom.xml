@@ -54,11 +54,11 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- slf4j logger-->
+		<!-- slf4j logger
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j2</artifactId>
-		</dependency>
+		</dependency> -->
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

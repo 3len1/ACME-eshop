@@ -19,5 +19,6 @@ public interface UserService {
     void adminDeleteUser(Long userId, boolean isAdmin);
     Page<User> getAll(boolean isAdmin, Pageable pageable);
     List<UserCountDto> getAllOrderByNumberOFOrders(boolean isAdmin);
+    List<UserCountDto> getUserOrders(boolean isAdmin);
 
 }

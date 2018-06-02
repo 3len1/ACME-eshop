@@ -179,4 +179,9 @@ public class UserServiceImpl implements UserService {
         if (!isAdmin) throw new WrongCredentialsException("You are not aloud to see other account");
         return orderRepository.getUserOrders();
     }
+
+    @Override
+    public List<UserCountDto> getUserOrders(boolean isAdmin) {
+        return orderRepository.getUserOrders();
+    }
 }

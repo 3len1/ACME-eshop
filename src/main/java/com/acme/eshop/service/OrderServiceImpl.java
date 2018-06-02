@@ -215,9 +215,4 @@ public class OrderServiceImpl implements OrderService {
         Order order = showOrder(orderCode, userId);
         return new ArrayList<>(order.getItems());
     }
-
-    @Override
-    public List<UserCountDto> getUserOrders(boolean isAdmin) {
-        return orderRepository.getUserOrders();
-    }
 }

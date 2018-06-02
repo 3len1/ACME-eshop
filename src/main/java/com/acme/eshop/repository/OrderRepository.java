@@ -7,11 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 
 /**
  * Created by Eleni on 5/13/2018.
@@ -28,5 +26,4 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("select new com.acme.eshop.dto.UserCountDto(u as user, count(*) as orderCount) from Order o JOIN o.user u group by u order by count(*) desc")
     List<UserCountDto> getUserOrders();
-
 }

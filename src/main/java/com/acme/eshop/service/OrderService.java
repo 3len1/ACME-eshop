@@ -23,6 +23,4 @@ public interface OrderService {
     boolean cancelOrder(String orderCode, Long userId);
     void deleteOrder(String orderCode, Long userId);
     List<OrderItem> getAllItemsFromOrder(String orderCode, Long userId);
-    List<UserCountDto> getUserOrders(boolean isAdmin);
-
 }
