@@ -4,10 +4,14 @@ package com.acme.eshop.domain;
 import com.acme.eshop.enums.Gender;
 import com.acme.eshop.utils.DateConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.hash.Hashing;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 /**
@@ -24,7 +28,7 @@ public class User extends PersistableEntity implements Serializable {
     private String email;
 
     @JsonIgnore
-    @Column(name = "PASSWORD", nullable = false, length = 30)
+    @Column(name = "PASSWORD", nullable = false, length = 64)
     private String password;
 
     @Column(name = "TOKEN", length = 16, unique = true)
@@ -61,7 +65,7 @@ public class User extends PersistableEntity implements Serializable {
                 Gender gender, @Size(max = 10) String phone, Long birthday,
                 Boolean isAdmin, Address address) {
         this.email = email;
-        this.password = password;
+        this.password = hashPassword(password);
         this.token = token;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -88,7 +92,7 @@ public class User extends PersistableEntity implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = hashPassword(password);
     }
 
     public UUID getToken() {
@@ -171,5 +175,11 @@ public class User extends PersistableEntity implements Serializable {
         return getEmail() != null ? getEmail().hashCode() : 0;
     }
 
+    public static String hashPassword(String password) {
+        String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8)
+                .toString();
+
+        return hashedPassword;
+    }
 
 }

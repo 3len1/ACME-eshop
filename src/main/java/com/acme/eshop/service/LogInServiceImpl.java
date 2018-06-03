@@ -39,7 +39,7 @@ public class LogInServiceImpl implements LoginService {
     public User logIn(String email, String password) {
         if (email == null && password == null)
             throw new WrongCredentialsException("You must give email and password for login");
-        User user = userRepository.findByEmailAndPassword(email, password);
+        User user = userRepository.findByEmailAndPassword(email, User.hashPassword(password));
         if (user != null) {
             user.setToken(UUID.randomUUID());
             log.info("User [{}} log in successfully", user.getId());
