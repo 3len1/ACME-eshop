@@ -5,7 +5,6 @@ import com.acme.eshop.domain.CartItem;
 import com.acme.eshop.domain.Order;
 import com.acme.eshop.domain.OrderItem;
 import com.acme.eshop.domain.User;
-import com.acme.eshop.dto.UserCountDto;
 import com.acme.eshop.exceptions.*;
 import com.acme.eshop.resources.ItemResource;
 import com.acme.eshop.resources.OrderResource;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component("orderService")
 public class OrderServiceImpl implements OrderService {
@@ -38,11 +36,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     ProductRepository productRepository;
     @Autowired
-    OrderItemRepository itemRepository;
+    OrderItemRepository orderItemRepository;
     @Autowired
     CartService cartService;
     @Autowired
     OrderConverter orderConverter;
+    @Autowired
+    CartItemRepository cartItemRepository;
 
     @Override
     public Page<Order> getAllOrder(Long userId, Pageable pageable) {
@@ -110,19 +110,19 @@ public class OrderServiceImpl implements OrderService {
             log.warn("Order with code [{}] already exist", orderResource.getOrderCode());
             throw new OrderAlreadyExistException("This orderCode is given to another order");
         }
-        User loginUser = userRepository.findById(userId).get();
-        if (loginUser == null) {
+        Optional<User> loginUser = userRepository.findById(userId);
+        if (!loginUser.isPresent()) {
             log.warn("User with id [{}] not found", userId);
             throw new UserNotFoundException("User not found");
         }
         Optional.ofNullable(cartService.getCartByUser(userId)).ifPresent(cart -> {
             Set<CartItem> cartsItems = cart.getItems();
             Order order = orderConverter.getOrder(orderResource);
-            order.setUser(loginUser);
+            order.setUser(loginUser.get());
             order.setCreatedDate(DateUtils.epochNow());
             orderRepository.save(order);
             cartsItems.forEach(cartItem -> {
-                cartItem.setCart(null);
+//                cartItem.setCart(null);
                 cartItem.getProduct().increasePurchased(cartItem.getAmount());
                 cartItem.getProduct().minusStockAmount(cartItem.getAmount());
                 productRepository.save(cartItem.getProduct());
@@ -132,7 +132,8 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setProduct(cartItem.getProduct());
                 orderItem.setCreatedDate(DateUtils.epochNow());
                 orderItem.setOrder(order);
-                itemRepository.save(orderItem);
+                orderItemRepository.save(orderItem);
+                cartItemRepository.delete(cartItem);
                 order.calculatePrice(orderItem.getPrice());
             });
 
@@ -163,7 +164,7 @@ public class OrderServiceImpl implements OrderService {
             order.calculatePrice(item.getPrice());
         });
         if (item.getOrder() != null) {
-            itemRepository.save(item);
+            orderItemRepository.save(item);
             log.info("Product [{}] added to order [{}]", addedItem.getProductCode(), orderCode);
             return orderRepository.save(item.getOrder());
         }
@@ -177,9 +178,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = showOrder(orderCode, userId);
         Optional.ofNullable(productRepository.findByProductCode(productCode)).ifPresent(product -> {
             if (order != null) {
-                product.increaseStockAmount(itemRepository.findOneByProductAndOrder(product, order).getAmount());
-                product.minusPurchased(itemRepository.findOneByProductAndOrder(product, order).getAmount());
-                itemRepository.deleteAllByProductAndOrder(product, order);
+                product.increaseStockAmount(orderItemRepository.findOneByProductAndOrder(product, order).getAmount());
+                product.minusPurchased(orderItemRepository.findOneByProductAndOrder(product, order).getAmount());
+                orderItemRepository.deleteAllByProductAndOrder(product, order);
                 log.info("Remove product [{}] from order [{}]", productCode, orderCode);
             }
         });
@@ -204,7 +205,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(String orderCode, Long userId) {
         Optional.ofNullable(showOrder(orderCode, userId)).ifPresent(order -> {
-            itemRepository.deleteAllByOrder(order);
+            orderItemRepository.deleteAllByOrder(order);
             orderRepository.delete(order);
             log.info("Admin delete user's [{}] order [{}]", userId, orderCode);
         });
