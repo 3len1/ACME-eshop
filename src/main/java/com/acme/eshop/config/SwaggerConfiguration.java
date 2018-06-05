@@ -33,7 +33,7 @@ public class SwaggerConfiguration {
 
     private ApiInfo apiInfo() {
 
-        Contact contact = new Contact("Koyot team",
+        Contact contact = new Contact("3len1",
                 "https://github.com/3len1/SpringRestApi", "vseleni@gmail.com");
         return new ApiInfo("ACME e-shop",
                 "Spring Rest API - Code.Hub",

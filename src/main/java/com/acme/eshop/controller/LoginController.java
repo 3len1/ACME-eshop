@@ -11,7 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+import springfox.documentation.annotations.ApiIgnore;
+
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,6 +29,13 @@ public class LoginController {
 
     @Autowired
     LoginService loginService;
+
+    @ApiIgnore
+    @GetMapping("/")
+    public RedirectView index(){
+        return new RedirectView("/swagger-ui.html");
+    }
+
 
     @ApiOperation(value = "Log in")
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,4 +57,5 @@ public class LoginController {
     public ResponseEntity<ErrorMessage> handleErrors(WrongCredentialsException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage("Given credentials are not correct", 401));
     }
+
 }

@@ -79,5 +79,9 @@ public class AdviceController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage("Order is already paid or canceled make a new one", 403));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handle(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMessage("It's not you it's us. Please try again latter", 500));
+    }
 }
 
