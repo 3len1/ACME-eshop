@@ -10,7 +10,6 @@ PostgreSQL:
 	url: localhost:5432/acme_eshop
 	username: acme
 	password: acme
-
 H2:
 	console path=/h2
 	username: sa 
